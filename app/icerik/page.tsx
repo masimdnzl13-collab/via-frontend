@@ -14,36 +14,36 @@ export default function IcerikUret() {
   const sektorler = ['Berber', 'Güzellik Salonu', 'Kafe', 'Restoran', 'Spor Salonu', 'Butik Mağaza'];
   const hedefler = ['Daha fazla müşteri', 'Daha fazla takipçi', 'Randevu almak', 'Ürün satmak'];
 
-async function icerikUret() {
-  setYukleniyor(true);
-  setSonuc('');
+  async function icerikUret() {
+    setYukleniyor(true);
+    setSonuc('');
 
-  try {
-    const res = await fetch('/api/ai/content-plan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch('https://via-backend-tkk6.onrender.com/icerik-uret', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      setSonuc(data.error || 'AI içerik üretilemedi.');
-      return;
+      if (!res.ok) {
+        setSonuc(data.error || 'AI içerik üretilemedi.');
+        return;
+      }
+
+      setSonuc(data.plan || 'AI cevap döndürmedi.');
+    } catch (err) {
+      console.error(err);
+      setSonuc('AI bağlantısı kurulamadı. Render backend bağlantısını kontrol et.');
+    } finally {
+      setYukleniyor(false);
     }
-
-    setSonuc(data.result || 'AI cevap döndürmedi.');
-  } catch (err) {
-    console.error(err);
-    setSonuc('AI bağlantısı kurulamadı. API route veya Vercel env ayarını kontrol et.');
-  } finally {
-    setYukleniyor(false);
   }
-}
+
   return (
     <main className="min-h-screen bg-black text-white px-4 py-10">
       <div className="max-w-2xl mx-auto">
-
         <div className="mb-8">
           <a href="/dashboard" className="text-zinc-500 text-sm hover:text-white transition">← Dashboard</a>
           <h1 className="text-3xl font-bold mt-4">✨ İçerik Üret</h1>
@@ -51,14 +51,13 @@ async function icerikUret() {
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4 mb-6">
-          
           <div>
             <label className="text-sm text-zinc-400 mb-2 block">İşletme adın</label>
             <input
               type="text"
               placeholder="örn. Mustafa Berber"
               value={form.isletme_adi}
-              onChange={e => setForm({...form, isletme_adi: e.target.value})}
+              onChange={e => setForm({ ...form, isletme_adi: e.target.value })}
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
@@ -69,7 +68,7 @@ async function icerikUret() {
               type="text"
               placeholder="örn. İstanbul"
               value={form.sehir}
-              onChange={e => setForm({...form, sehir: e.target.value})}
+              onChange={e => setForm({ ...form, sehir: e.target.value })}
               className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
             />
           </div>
@@ -79,8 +78,9 @@ async function icerikUret() {
             <div className="grid grid-cols-3 gap-2">
               {sektorler.map(s => (
                 <button
+                  type="button"
                   key={s}
-                  onClick={() => setForm({...form, sektor: s})}
+                  onClick={() => setForm({ ...form, sektor: s })}
                   className={`py-2 px-3 rounded-xl text-sm border transition ${
                     form.sektor === s
                       ? 'border-violet-500 bg-violet-600/20 text-white'
@@ -98,8 +98,9 @@ async function icerikUret() {
             <div className="grid grid-cols-2 gap-2">
               {hedefler.map(h => (
                 <button
+                  type="button"
                   key={h}
-                  onClick={() => setForm({...form, hedef: h})}
+                  onClick={() => setForm({ ...form, hedef: h })}
                   className={`py-2 px-3 rounded-xl text-sm border transition ${
                     form.hedef === h
                       ? 'border-violet-500 bg-violet-600/20 text-white'
@@ -113,6 +114,7 @@ async function icerikUret() {
           </div>
 
           <button
+            type="button"
             onClick={icerikUret}
             disabled={yukleniyor || !form.isletme_adi || !form.sehir}
             className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 py-3 rounded-xl font-semibold transition"
@@ -129,7 +131,6 @@ async function icerikUret() {
             </div>
           </div>
         )}
-
       </div>
     </main>
   );
