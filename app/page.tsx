@@ -5,7 +5,7 @@ export default function Home() {
       <nav className="flex items-center justify-between px-8 py-6 border-b border-zinc-800">
         <div className="text-2xl font-bold text-white">via<span className="text-violet-500">.ai</span></div>
         <div className="flex gap-4">
-          <button className="text-zinc-400 hover:text-white transition">Giriş</button>
+          <a href="/giris" className="text-zinc-400 hover:text-white transition">Giriş</a>
           <a href="/kayit" className="bg-violet-600 hover:bg-violet-700 px-4 py-2 rounded-lg transition">
             Ücretsiz Başla
           </a>
