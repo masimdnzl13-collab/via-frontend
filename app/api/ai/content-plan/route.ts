@@ -20,7 +20,7 @@ Bu işletme için 7 günlük sosyal medya içerik planı oluştur.
 `;
 
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250929',
+     model: 'claude-3-5-sonnet-20241022',
       max_tokens: 1000,
       messages: [
         {
@@ -36,8 +36,14 @@ Bu işletme için 7 günlük sosyal medya içerik planı oluştur.
       .join('\n');
 
     return NextResponse.json({ result: text });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'AI hata verdi' }, { status: 500 });
+   } catch (err: any) {
+    console.error('CLAUDE ERROR:', err);
+
+    return NextResponse.json(
+      {
+        error: err?.message || 'AI hata verdi',
+        detail: JSON.stringify(err, null, 2),
+      },
+      { status: 500 }
+    );
   }
-}
