@@ -32,7 +32,7 @@ export default function IcerikUret() {
         return;
       }
 
-      setSonuc(data.plan || 'AI cevap döndürmedi.');
+      setSonuc(data.plan || data.result || 'AI cevap döndürmedi.');
     } catch (err) {
       console.error(err);
       setSonuc('AI bağlantısı kurulamadı. Render backend bağlantısını kontrol et.');
