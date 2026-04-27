@@ -1,50 +1,27 @@
 import { NextResponse } from 'next/server';
-import { anthropic } from '@/lib/claude';
+import Anthropic from '@anthropic-ai/sdk';
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const {
-      isletme_adi,
-      sektor,
-      sehir,
-      hedef,
-    } = body;
-
-    if (!isletme_adi || !sektor || !sehir || !hedef) {
-      return NextResponse.json(
-        { error: 'Eksik işletme bilgisi var.' },
-        { status: 400 }
-      );
-    }
-
     const prompt = `
-Sen via.ai adlı uygulamanın yapay zeka sosyal medya yöneticisisin.
+İşletme:
+- Ad: ${body.isletme_adi}
+- Sektör: ${body.sektor}
+- Şehir: ${body.sehir}
+- Hedef: ${body.hedef}
 
-İşletme bilgileri:
-- İşletme adı: ${isletme_adi}
-- Sektör: ${sektor}
-- Şehir: ${sehir}
-- Hedef: ${hedef}
-
-Bu işletme için 7 günlük sosyal medya içerik planı üret.
-
-Her gün için şu alanları ver:
-1. Gün
-2. İçerik fikri
-3. Çekim talimatı
-4. Caption
-5. Hashtagler
-6. Paylaşım saati
-7. Neden bu içerik uygun?
-
-Yanıtı sade, Türkçe ve uygulanabilir yaz.
+Bu işletme için 7 günlük sosyal medya içerik planı oluştur.
 `;
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 1800,
+      max_tokens: 1000,
       messages: [
         {
           role: 'user',
@@ -54,17 +31,13 @@ Yanıtı sade, Türkçe ve uygulanabilir yaz.
     });
 
     const text = message.content
-      .filter((block) => block.type === 'text')
-      .map((block) => block.text)
+      .filter((c: any) => c.type === 'text')
+      .map((c: any) => c.text)
       .join('\n');
 
     return NextResponse.json({ result: text });
-  } catch (error) {
-    console.error('Claude API error:', error);
-
-    return NextResponse.json(
-      { error: 'AI içerik planı oluşturulamadı.' },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: 'AI hata verdi' }, { status: 500 });
   }
 }

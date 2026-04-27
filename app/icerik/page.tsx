@@ -14,23 +14,32 @@ export default function IcerikUret() {
   const sektorler = ['Berber', 'Güzellik Salonu', 'Kafe', 'Restoran', 'Spor Salonu', 'Butik Mağaza'];
   const hedefler = ['Daha fazla müşteri', 'Daha fazla takipçi', 'Randevu almak', 'Ürün satmak'];
 
-  async function icerikUret() {
-    setYukleniyor(true);
-    setSonuc('');
-    try {
-      const res = await fetch('https://via-backend-tkk6.onrender.com/icerik-uret', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      setSonuc(data.plan);
-    } catch (err) {
-      setSonuc('API bağlantısı kurulamadı. Backend çalışıyor mu?');
+async function icerikUret() {
+  setYukleniyor(true);
+  setSonuc('');
+
+  try {
+    const res = await fetch('/api/ai/content-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setSonuc(data.error || 'AI içerik üretilemedi.');
+      return;
     }
+
+    setSonuc(data.result || 'AI cevap döndürmedi.');
+  } catch (err) {
+    console.error(err);
+    setSonuc('AI bağlantısı kurulamadı. API route veya Vercel env ayarını kontrol et.');
+  } finally {
     setYukleniyor(false);
   }
-
+}
   return (
     <main className="min-h-screen bg-black text-white px-4 py-10">
       <div className="max-w-2xl mx-auto">
