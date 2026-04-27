@@ -56,11 +56,11 @@ export default function Kayit() {
   });
 
   const filtreliSektorler = TUM_SEKTORLER.filter(s =>
-    s.toLowerCase().includes(sektorArama.toLowerCase())
+    s.toLowerCase().startsWith(sektorArama.toLowerCase())
   );
 
   const filtreliSehirler = TUM_SEHIRLER.filter(s =>
-    s.toLowerCase().includes(sehirArama.toLowerCase())
+    s.toLowerCase().startsWith(sehirArama.toLowerCase())
   );
 
   async function kayitOl() {
