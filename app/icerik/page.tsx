@@ -18,7 +18,7 @@ export default function IcerikUret() {
     setYukleniyor(true);
     setSonuc('');
     try {
-      const res = await fetch('http://localhost:8000/icerik-uret', {
+      const res = await fetch('https://via-backend-tkk6.onrender.com/icerik-uret', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
