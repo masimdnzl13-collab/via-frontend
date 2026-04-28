@@ -8,7 +8,7 @@ const client = new Anthropic({
 export async function POST(req: NextRequest) {
   const { mesaj, profil, gecmis } = await req.json();
 
-  const sistemPrompt = `Sen via.ai'nin yapay zeka sosyal medya asistanısın.
+  const sistemPrompt = `Sen via.ai'nin yapay zeka sosyal medya asistanısın. Küçük işletmelere viral içerik stratejileri üretiyorsun.
 
 Kullanıcının işletme bilgileri:
 - İşletme adı: ${profil.isletme_adi}
@@ -16,35 +16,26 @@ Kullanıcının işletme bilgileri:
 - Şehir: ${profil.sehir}
 - Hedef: ${profil.hedef}
 
-Görevin:
-- Bu işletmeye özel sosyal medya içerikleri üret
-- Instagram, TikTok, Facebook için içerik planları yap
-- Caption, hashtag, reels fikirleri, kampanya metinleri oluştur
-- Türkçe yanıt ver, samimi ve enerjik ol, emoji kullan
+GÖREVIN:
+- Önce web'de o sektördeki güncel viral videoları ve trendleri ara
+- Gerçekten viral olan içerik formatlarını bul (milyonlarca izlenen)
+- O formatları işletmeye uyarla
+- Klasik "önce dışardan çek sonra içerden çek" tavsiyelerinden uzak dur
+- Yaratıcı, beklenmedik, viral potansiyeli yüksek fikirler üret
+- Gerçek viral video örneklerinden ilham al ve link ver
+- İnsanların "bunu ben de yapabilirim" diyeceği uygulanabilir fikirler sun
 
-CEVAP VERME KURALLARI - ÇOK ÖNEMLİ:
-- Asla ## veya ### kullanma
-- Asla --- kullanma  
-- Asla \`\`\` kod bloğu kullanma
-- Her bölümü şu formatta yaz:
-
-[BASLIK] Bölüm başlığı buraya
-[MADDE] Kısa madde 1
-[MADDE] Kısa madde 2
+CEVAP FORMATI - SADECE BU FORMATI KULLAN:
+[BASLIK] Başlık buraya
+[MADDE] Kısa madde
 [ICERIK] İçerik adı | Açıklama | #hashtag1 #hashtag2
-[CAPTION] Caption metni buraya
-[IPUCU] Öneri veya ipucu buraya
+[CAPTION] Caption metni
+[IPUCU] İpucu
+[TREND] Viral trend adı | Neden viral oldu | Nasıl uyarlarsın
 
-Örnek cevap formatı:
-[BASLIK] 🔥 Trend Video Türleri
-[MADDE] Before-after dönüşüm videoları çok izleniyor
-[MADDE] Challenge videoları viral oluyor
-[BASLIK] 📱 Sana Özel İçerikler
-[ICERIK] Sabahın Gücü Reels | 0-5sn uyanış, 5-15sn antrenman, 15-30sn kahvaltı keyfi | #AdanaSpor #Fitness
-[CAPTION] Sabahları ASAN'da başlamak ayrı bir his 💪 Antrenman + kahvaltı = mükemmel gün başlangıcı!`;
+Asla ## ### --- \`\`\` kullanma.`;
 
   type Rol = 'user' | 'assistant';
-
   const mesajlar: { role: Rol; content: string }[] = [];
   
   for (const m of gecmis || []) {
@@ -56,12 +47,24 @@ CEVAP VERME KURALLARI - ÇOK ÖNEMLİ:
   mesajlar.push({ role: 'user', content: mesaj });
 
   const yanit = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 1000,
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 2000,
     system: sistemPrompt,
     messages: mesajlar,
+    tools: [
+      {
+        type: 'web_search_20250305',
+        name: 'web_search',
+      } as any,
+    ],
   });
 
-  const cevap = yanit.content[0].type === 'text' ? yanit.content[0].text : '';
+  let cevap = '';
+  for (const blok of yanit.content) {
+    if (blok.type === 'text') {
+      cevap += blok.text;
+    }
+  }
+
   return NextResponse.json({ cevap });
 }

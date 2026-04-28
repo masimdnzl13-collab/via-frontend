@@ -49,11 +49,14 @@ function MesajKarti({ icerik }: { icerik: string }) {
             </div>
           );
         }
-        if (satir.startsWith('[IPUCU]')) {
-          const metin = satir.replace('[IPUCU]', '').trim();
+        if (satir.startsWith('[TREND]')) {
+          const metin = satir.replace('[TREND]', '').trim();
+          const parcalar = metin.split('|');
           return (
-            <div key={i} className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2 mt-1">
-              <p className="text-amber-400 text-sm">💡 {metin}</p>
+            <div key={i} className="bg-green-500/10 border border-green-500/30 rounded-xl p-3 mt-1">
+              <p className="text-green-400 font-semibold text-sm mb-1">🔥 {parcalar[0]?.trim()}</p>
+              {parcalar[1] && <p className="text-zinc-400 text-xs mb-1">{parcalar[1].trim()}</p>}
+              {parcalar[2] && <p className="text-zinc-300 text-xs">{parcalar[2].trim()}</p>}
             </div>
           );
         }
