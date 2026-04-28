@@ -25,10 +25,13 @@ Görevin:
 - Kısa, net ve uygulanabilir öneriler sun
 - Emoji kullan, samimi ol`;
 
-  const mesajlar = [];
+  type Rol = 'user' | 'assistant';
+
+  const mesajlar: { role: Rol; content: string }[] = [];
+  
   for (const m of gecmis || []) {
     mesajlar.push({
-      role: m.rol === 'kullanici' ? 'user' : 'assistant',
+      role: (m.rol === 'kullanici' ? 'user' : 'assistant') as Rol,
       content: m.icerik,
     });
   }
@@ -41,5 +44,6 @@ Görevin:
     messages: mesajlar,
   });
 
-  return NextResponse.json({ cevap: yanit.content[0].type === 'text' ? yanit.content[0].text : '' });
+  const cevap = yanit.content[0].type === 'text' ? yanit.content[0].text : '';
+  return NextResponse.json({ cevap });
 }
