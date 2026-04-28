@@ -43,7 +43,7 @@ export default function IcerikUret() {
     setYukleniyor(true);
 
     try {
-      const res = await fetch('https://via-backend-tkk6.onrender.com/sohbet', {
+      const res = await fetch('/api/sohbet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
