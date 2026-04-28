@@ -171,6 +171,13 @@ export default function Dashboard() {
     Krizi Çöz →
   </a>
 </div>
+<div className="bg-gradient-to-br from-violet-600/20 to-blue-600/20 border border-violet-500/30 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">📊 Aylık Büyüme Raporu</h2>
+  <p className="text-zinc-400 text-sm mb-4">Ajans kalitesinde analiz ve PDF rapor.</p>
+  <a href="/aylik-rapor" className="block w-full bg-violet-600 hover:bg-violet-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Raporu Gör →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
