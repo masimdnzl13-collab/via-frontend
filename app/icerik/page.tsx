@@ -6,7 +6,65 @@ interface Mesaj {
   rol: 'kullanici' | 'ai';
   icerik: string;
 }
-
+function MesajKarti({ icerik }: { icerik: string }) {
+  const satirlar = icerik.split('\n').filter(s => s.trim());
+  
+  return (
+    <div className="space-y-2">
+      {satirlar.map((satir, i) => {
+        if (satir.startsWith('[BASLIK]')) {
+          const metin = satir.replace('[BASLIK]', '').trim();
+          return (
+            <div key={i} className="bg-violet-600/20 border border-violet-500/40 rounded-xl px-4 py-2 mt-3">
+              <p className="text-violet-300 font-semibold text-sm">{metin}</p>
+            </div>
+          );
+        }
+        if (satir.startsWith('[MADDE]')) {
+          const metin = satir.replace('[MADDE]', '').trim();
+          return (
+            <div key={i} className="flex items-start gap-2 px-2">
+              <span className="text-violet-400 mt-0.5 flex-shrink-0">•</span>
+              <p className="text-zinc-300 text-sm">{metin}</p>
+            </div>
+          );
+        }
+        if (satir.startsWith('[ICERIK]')) {
+          const metin = satir.replace('[ICERIK]', '').trim();
+          const parcalar = metin.split('|');
+          return (
+            <div key={i} className="bg-zinc-800 border border-zinc-700 rounded-xl p-3 mt-1">
+              {parcalar[0] && <p className="text-white font-semibold text-sm mb-1">🎬 {parcalar[0].trim()}</p>}
+              {parcalar[1] && <p className="text-zinc-400 text-xs mb-2">{parcalar[1].trim()}</p>}
+              {parcalar[2] && <p className="text-violet-400 text-xs">{parcalar[2].trim()}</p>}
+            </div>
+          );
+        }
+        if (satir.startsWith('[CAPTION]')) {
+          const metin = satir.replace('[CAPTION]', '').trim();
+          return (
+            <div key={i} className="bg-zinc-800 border border-violet-500/30 rounded-xl p-3 mt-1">
+              <p className="text-xs text-violet-400 mb-1 font-semibold">📝 Caption</p>
+              <p className="text-zinc-300 text-sm">{metin}</p>
+            </div>
+          );
+        }
+        if (satir.startsWith('[IPUCU]')) {
+          const metin = satir.replace('[IPUCU]', '').trim();
+          return (
+            <div key={i} className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2 mt-1">
+              <p className="text-amber-400 text-sm">💡 {metin}</p>
+            </div>
+          );
+        }
+        if (satir.trim()) {
+          return <p key={i} className="text-zinc-300 text-sm px-2">{satir}</p>;
+        }
+        return null;
+      })}
+    </div>
+  );
+}
 export default function IcerikUret() {
   const [mesajlar, setMesajlar] = useState<Mesaj[]>([]);
   const [input, setInput] = useState('');
@@ -99,13 +157,13 @@ export default function IcerikUret() {
                 AI
               </div>
             )}
-            <div className={`max-w-xl px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-              m.rol === 'kullanici'
-                ? 'bg-violet-600 text-white rounded-br-sm'
-                : 'bg-zinc-900 border border-zinc-800 text-zinc-200 rounded-bl-sm'
-            }`}>
-              {m.icerik}
-            </div>
+            <div className={`max-w-xl rounded-2xl text-sm leading-relaxed ${
+  m.rol === 'kullanici'
+    ? 'bg-violet-600 text-white rounded-br-sm px-4 py-3'
+    : 'rounded-bl-sm'
+}`}>
+  {m.rol === 'kullanici' ? m.icerik : <MesajKarti icerik={m.icerik} />}
+</div>
             {m.rol === 'kullanici' && (
               <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center text-xs font-bold ml-3 flex-shrink-0 mt-1">
                 {profil?.isletme_adi?.[0] || 'S'}
