@@ -193,9 +193,11 @@ export default function AylikRapor() {
       const data = await res.json();
 
       const yeniRapor = {
-  ...veriler,
-  ai_analiz: data.aiAnaliz,
-}
+        ay: veriler.ay,
+        yil: veriler.yil,
+        ai_analiz: data.aiAnaliz,
+        ...veriler,
+      };
       setSeciliRapor(yeniRapor);
       setYeniRaporAc(false);
 
