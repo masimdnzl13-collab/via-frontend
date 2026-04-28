@@ -136,7 +136,13 @@ export default function Dashboard() {
                 İçerik Üret →
               </a>
             </div>
-
+<div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">🔍 Rakip Analizi</h2>
+  <p className="text-zinc-400 text-sm mb-4">Rakibini analiz et, boşlukları yakala.</p>
+  <a href="/rakip-analizi" className="block w-full bg-zinc-800 hover:bg-zinc-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Analiz Et →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
@@ -172,8 +178,3 @@ export default function Dashboard() {
     </main>
   );
 }
-<a href="/rakip-analizi" className="bg-zinc-900 border border-zinc-800 hover:border-violet-500 rounded-2xl p-4 transition">
-  <p className="text-2xl mb-2">🔍</p>
-  <p className="font-semibold text-sm mb-1">Rakip Analizi</p>
-  <p className="text-zinc-500 text-xs">Rakibini analiz et, boşlukları yakala</p>
-</a>
