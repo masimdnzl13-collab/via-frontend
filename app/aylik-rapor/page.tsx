@@ -194,8 +194,6 @@ export default function AylikRapor() {
 
       const yeniRapor = {
   ...veriler,
-  ay: veriler.ay,
-  yil: veriler.yil,
   ai_analiz: data.aiAnaliz,
 }
       setSeciliRapor(yeniRapor);
