@@ -172,3 +172,8 @@ export default function Dashboard() {
     </main>
   );
 }
+<a href="/rakip-analizi" className="bg-zinc-900 border border-zinc-800 hover:border-violet-500 rounded-2xl p-4 transition">
+  <p className="text-2xl mb-2">🔍</p>
+  <p className="font-semibold text-sm mb-1">Rakip Analizi</p>
+  <p className="text-zinc-500 text-xs">Rakibini analiz et, boşlukları yakala</p>
+</a>
