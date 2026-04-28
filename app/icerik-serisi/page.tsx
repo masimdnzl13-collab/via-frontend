@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-
+console.log("TEST ICERIK SERISI");
 function SonucKarti({ icerik }: { icerik: string }) {
   const satirlar = icerik.split('\n').filter(s => s.trim());
   const [acikBolumler, setAcikBolumler] = useState<number[]>([0]);
