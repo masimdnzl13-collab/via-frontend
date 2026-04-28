@@ -63,12 +63,12 @@ export default function Home() {
             <span className="text-violet-400">viral içerik planları</span>{' '}
             sadece bir tık uzağınızda.
           </p>
-          
-            href="/kayit"
-            className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-8 py-4 rounded-xl text-lg font-bold tracking-wide transition"
-          >
-            HEMEN BAŞLA →
-          </a>
+          <a
+  href="/kayit"
+  className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-full text-sm font-bold transition"
+>
+  HEMEN BAŞLA →
+</a>
         </div>
 
         {/* Aşağı kaydırma göstergesi */}
