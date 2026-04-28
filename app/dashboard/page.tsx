@@ -164,6 +164,13 @@ export default function Dashboard() {
     Analiz Et →
   </a>
 </div>
+<div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">🚨 Kriz Yönetimi</h2>
+  <p className="text-zinc-400 text-sm mb-4">Kötü yorum mu geldi? Hemen çöz.</p>
+  <a href="/kriz-yonetimi" className="block w-full bg-zinc-800 hover:bg-zinc-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Krizi Çöz →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
