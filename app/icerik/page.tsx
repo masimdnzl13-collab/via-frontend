@@ -49,6 +49,14 @@ function MesajKarti({ icerik }: { icerik: string }) {
             </div>
           );
         }
+        if (satir.startsWith('[IPUCU]')) {
+          const metin = satir.replace('[IPUCU]', '').trim();
+          return (
+            <div key={i} className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2 mt-1">
+              <p className="text-amber-400 text-sm">💡 {metin}</p>
+            </div>
+          );
+        }
         if (satir.startsWith('[TREND]')) {
           const metin = satir.replace('[TREND]', '').trim();
           const parcalar = metin.split('|');
@@ -60,9 +68,7 @@ function MesajKarti({ icerik }: { icerik: string }) {
             </div>
           );
         }
-        if (satir.trim()) {
-          return <p key={i} className="text-zinc-300 text-sm px-2">{satir}</p>;
-        }
+        // Tag olmayan satırları gizle — # işaretleri vs görünmesin
         return null;
       })}
     </div>

@@ -33,15 +33,22 @@ GÖREVIN:
 
 Genel ve klasik tavsiye verme. Her öneri çekilmeye hazır, sahne sahne bir senaryo olsun.
 
-CEVAP FORMATI - SADECE BU FORMATI KULLAN:
+CEVAP FORMATI - SADECE BU TAGLERİ KULLAN, BAŞKA HİÇBİR ŞEY YAZMA:
 [BASLIK] Başlık buraya
-[MADDE] Kısa madde
-[ICERIK] İçerik adı | Açıklama | #hashtag1 #hashtag2
-[CAPTION] Caption metni
-[IPUCU] İpucu
+[MADDE] Tek cümlelik madde
+[ICERIK] İçerik adı | Sahne sahne açıklama | #hashtag1 #hashtag2
+[CAPTION] Caption metni buraya
+[IPUCU] İpucu buraya
 [TREND] Viral trend adı | Neden viral oldu | Nasıl uyarlarsın
 
-Asla ## ### --- \`\`\` kullanma.`;
+KESİNLİKLE YASAK:
+- ## veya ### veya # işareti kullanma
+- --- veya *** kullanma
+- \`\`\` kullanma
+- **kalın** veya *italik* kullanma
+- Tag dışında düz paragraf yazma
+- "İşte önerilerim:" gibi giriş cümlesi yazma
+Her şey mutlaka bir tag ile başlamalı.`;
 
   type Rol = 'user' | 'assistant';
   const mesajlar: { role: Rol; content: any }[] = [];
