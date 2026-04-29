@@ -216,6 +216,13 @@ export default function Dashboard() {
     Viral Fikirler →
   </a>
 </div>
+<div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">🔍 Algoritma & SEO</h2>
+  <p className="text-zinc-400 text-sm mb-4">Algoritmayı yeni, Google'da üst sıraya çık.</p>
+  <a href="/algoritma-seo" className="block w-full bg-zinc-800 hover:bg-zinc-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Analiz Et →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
