@@ -195,6 +195,13 @@ export default function Dashboard() {
     Trendleri Gör →
   </a>
 </div>
+<div className="bg-gradient-to-br from-pink-600/10 to-orange-600/10 border border-pink-500/30 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">🚀 Lansman Stratejisti</h2>
+  <p className="text-zinc-400 text-sm mb-4">Ürün çıkmadan talep yarat, satışları patlat.</p>
+  <a href="/lansman" className="block w-full bg-pink-600 hover:bg-pink-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Strateji Oluştur →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
