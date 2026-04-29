@@ -77,7 +77,7 @@ export default function Kayit() {
     });
   }
 
-  async function mailIleDevam() {
+async function mailIleDevam() {
   setYukleniyor(true);
 
   const { error } = await supabase.auth.signInWithOtp({
@@ -96,10 +96,6 @@ export default function Kayit() {
   setDogrulamaGonderildi(true);
   setYukleniyor(false);
 }
-    setDogrulamaGonderildi(true);
-    setYukleniyor(false);
-  }
-
   async function dogrulamaYap() {
     setYukleniyor(true);
     const { error } = await supabase.auth.verifyOtp({
