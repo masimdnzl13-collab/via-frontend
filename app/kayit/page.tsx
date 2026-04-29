@@ -101,7 +101,7 @@ async function mailIleDevam() {
     const { error } = await supabase.auth.verifyOtp({
       email: form.email,
       token: dogrulamaKodu,
-      type: 'signup',
+      type: 'email',
     });
     if (error) {
       alert('Kod hatalı: ' + error.message);
