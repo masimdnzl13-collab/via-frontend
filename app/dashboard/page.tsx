@@ -215,141 +215,118 @@ export default function Dashboard() {
               </div>
 
 {/* 2. satır özellikler */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            {/* Tüm özellikler — 3'lü grid sol panel içinde */}
+            <div className="grid grid-cols-3 gap-4 mt-4">
 
-              {/* Algoritma & SEO */}
               <a href="/api/algoritma-seo" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-violet-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🔍</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🔍</span>
                   <h2 className="text-sm font-semibold">Algoritma & SEO</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Instagram ve TikTok algoritmasını anla, içeriklerini öne çıkar.</p>
-                <p className="text-xs text-violet-400 mt-2 group-hover:text-violet-300">Analiz et →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Instagram ve TikTok algoritmasını anla, içeriklerini öne çıkar.</p>
+                <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">Analiz et →</p>
               </a>
 
-              {/* İçerik Serisi */}
               <a href="/api/icerik-serisi" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-violet-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🎬</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🎬</span>
                   <h2 className="text-sm font-semibold">İçerik Serisi</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Birbirine bağlı içerik serileri oluştur, takipçi bağlılığını artır.</p>
-                <p className="text-xs text-violet-400 mt-2 group-hover:text-violet-300">Seri oluştur →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Birbirine bağlı içerik serileri oluştur, takipçi bağlılığını artır.</p>
+                <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">Seri oluştur →</p>
               </a>
 
-              {/* Kriz Yönetimi */}
               <a href="/api/kriz-yonetimi" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-red-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🚨</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🚨</span>
                   <h2 className="text-sm font-semibold">Kriz Yönetimi</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Olumsuz yorum veya kriz anında nasıl yanıt vereceğini öğren.</p>
-                <p className="text-xs text-red-400 mt-2 group-hover:text-red-300">Hızlı yanıt →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Olumsuz yorum veya kriz anında nasıl yanıt vereceğini öğren.</p>
+                <p className="text-xs text-red-400 mt-3 group-hover:text-red-300">Hızlı yanıt →</p>
               </a>
 
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-
-              {/* Lansman */}
               <a href="/api/lansman" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-violet-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🚀</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🚀</span>
                   <h2 className="text-sm font-semibold">Lansman Planı</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Yeni ürün veya hizmet lansmanı için adım adım plan oluştur.</p>
-                <p className="text-xs text-violet-400 mt-2 group-hover:text-violet-300">Plan oluştur →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Yeni ürün veya hizmet lansmanı için adım adım plan oluştur.</p>
+                <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">Plan oluştur →</p>
               </a>
 
-              {/* Müşteri Analizi */}
               <a href="/api/musteri-analizi" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-violet-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">👥</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">👥</span>
                   <h2 className="text-sm font-semibold">Müşteri Analizi</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Hedef kitlenı analiz et, en doğru kişilere ulaş.</p>
-                <p className="text-xs text-violet-400 mt-2 group-hover:text-violet-300">Analiz et →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Hedef kitlenı analiz et, en doğru kişilere ulaş.</p>
+                <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">Analiz et →</p>
               </a>
 
-              {/* Paylaşımla Büyü */}
               <a href="/api/paylasimle-buyume" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">📤</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">📤</span>
                   <h2 className="text-sm font-semibold">Paylaşımla Büyü</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Viral paylaşım stratejileri ve işbirliği fırsatlarını keşfet.</p>
-                <p className="text-xs text-green-400 mt-2 group-hover:text-green-300">Keşfet →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Viral paylaşım stratejileri ve işbirliği fırsatlarını keşfet.</p>
+                <p className="text-xs text-green-400 mt-3 group-hover:text-green-300">Keşfet →</p>
               </a>
 
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-
-              {/* Performans Tahmin */}
               <a href="/api/performans-tahmin" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-amber-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">📊</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">📊</span>
                   <h2 className="text-sm font-semibold">Performans Tahmini</h2>
                 </div>
-                <p className="text-xs text-zinc-500">İçeriğini paylaşmadan önce performansını tahmin et.</p>
-                <p className="text-xs text-amber-400 mt-2 group-hover:text-amber-300">Tahmin et →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">İçeriğini paylaşmadan önce performansını tahmin et.</p>
+                <p className="text-xs text-amber-400 mt-3 group-hover:text-amber-300">Tahmin et →</p>
               </a>
 
-              {/* Profil Denetim */}
               <a href="/api/profil-denetim" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-violet-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🔎</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🔎</span>
                   <h2 className="text-sm font-semibold">Profil Denetimi</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Instagram ve TikTok profilini analiz et, eksiklerini gör.</p>
-                <p className="text-xs text-violet-400 mt-2 group-hover:text-violet-300">Denetle →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Instagram ve TikTok profilini analiz et, eksiklerini gör.</p>
+                <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">Denetle →</p>
               </a>
 
-              {/* Rakip Analizi */}
               <a href="/api/rakip" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-red-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">⚔️</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">⚔️</span>
                   <h2 className="text-sm font-semibold">Rakip Analizi</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Rakiplerini takip et, onlardan önce trende gir.</p>
-                <p className="text-xs text-red-400 mt-2 group-hover:text-red-300">Rakibi gör →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Rakiplerini takip et, onlardan önce trende gir.</p>
+                <p className="text-xs text-red-400 mt-3 group-hover:text-red-300">Rakibi gör →</p>
               </a>
 
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-
-              {/* Saat Bulucu */}
               <a href="/api/saat-bulucu" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-blue-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🕐</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🕐</span>
                   <h2 className="text-sm font-semibold">En İyi Saat Bulucu</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Takipçilerin en aktif olduğu saatleri bul, o saatte paylaş.</p>
-                <p className="text-xs text-blue-400 mt-2 group-hover:text-blue-300">Saati bul →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Takipçilerin en aktif olduğu saatleri bul, o saatte paylaş.</p>
+                <p className="text-xs text-blue-400 mt-3 group-hover:text-blue-300">Saati bul →</p>
               </a>
 
-              {/* Trend Sörfçü */}
               <a href="/api/trend-surfcu" className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-green-500 transition group block">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">🏄</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🏄</span>
                   <h2 className="text-sm font-semibold">Trend Sörfçüsü</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Anlık trendleri yakala, viral olmadan önce pozisyon al.</p>
-                <p className="text-xs text-green-400 mt-2 group-hover:text-green-300">Trende bin →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Anlık trendleri yakala, viral olmadan önce pozisyon al.</p>
+                <p className="text-xs text-green-400 mt-3 group-hover:text-green-300">Trende bin →</p>
               </a>
 
-              {/* Aylık Rapor */}
               <div
                 onClick={() => setIstatistikModal(true)}
                 className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-violet-500 transition group cursor-pointer"
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-2xl">📈</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">📈</span>
                   <h2 className="text-sm font-semibold">Aylık Rapor</h2>
                 </div>
-                <p className="text-xs text-zinc-500">Tüm istatistiklerin, büyüme analizin ve öneriler.</p>
-                <p className="text-xs text-violet-400 mt-2 group-hover:text-violet-300">Raporu gör →</p>
+                <p className="text-xs text-zinc-500 leading-relaxed">Tüm istatistiklerin, büyüme analizin ve öneriler.</p>
+                <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">Raporu gör →</p>
               </div>
 
             </div>
