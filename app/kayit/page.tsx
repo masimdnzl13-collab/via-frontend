@@ -78,17 +78,24 @@ export default function Kayit() {
   }
 
   async function mailIleDevam() {
-    setYukleniyor(true);
-    const { error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.sifre,
-      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) {
-      alert('Hata: ' + error.message);
-      setYukleniyor(false);
-      return;
-    }
+  setYukleniyor(true);
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: form.email,
+    options: {
+      shouldCreateUser: true,
+    },
+  });
+
+  if (error) {
+    alert('Hata: ' + error.message);
+    setYukleniyor(false);
+    return;
+  }
+
+  setDogrulamaGonderildi(true);
+  setYukleniyor(false);
+}
     setDogrulamaGonderildi(true);
     setYukleniyor(false);
   }
