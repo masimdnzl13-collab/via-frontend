@@ -61,6 +61,8 @@ export default function Kayit() {
     email: '',
     sifre: '',
     kullanici_turu: 'isletme',
+    instagram_kullanici: '',
+    tiktok_kullanici: '',
   });
 
   const filtreliSektorler = TUM_SEKTORLER.filter(s =>
@@ -77,25 +79,17 @@ export default function Kayit() {
     });
   }
 
-async function mailIleDevam() {
-  setYukleniyor(true);
-
-  const { error } = await supabase.auth.signInWithOtp({
-    email: form.email,
-    options: {
-      shouldCreateUser: true,
-    },
-  });
-
-  if (error) {
-    alert('Hata: ' + error.message);
+  async function mailIleDevam() {
+    setYukleniyor(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: form.email,
+      options: { shouldCreateUser: true },
+    });
+    if (error) { alert('Hata: ' + error.message); setYukleniyor(false); return; }
+    setDogrulamaGonderildi(true);
     setYukleniyor(false);
-    return;
   }
 
-  setDogrulamaGonderildi(true);
-  setYukleniyor(false);
-}
   async function dogrulamaYap() {
     setYukleniyor(true);
     const { error } = await supabase.auth.verifyOtp({
@@ -103,11 +97,7 @@ async function mailIleDevam() {
       token: dogrulamaKodu,
       type: 'email',
     });
-    if (error) {
-      alert('Kod hatalı: ' + error.message);
-      setYukleniyor(false);
-      return;
-    }
+    if (error) { alert('Kod hatalı: ' + error.message); setYukleniyor(false); return; }
     setAdim(2);
     setYukleniyor(false);
   }
@@ -124,18 +114,19 @@ async function mailIleDevam() {
           sehir: form.sehir,
           hedef: form.hedef,
           kullanici_turu: form.kullanici_turu,
+          instagram_kullanici: form.instagram_kullanici.replace('@', '').trim(),
+          tiktok_kullanici: form.tiktok_kullanici.replace('@', '').trim(),
         });
       }
       window.location.href = '/dashboard';
-    } catch {
-      alert('Bir hata oluştu.');
-    }
+    } catch { alert('Bir hata oluştu.'); }
     setYukleniyor(false);
   }
 
+  const toplamAdim = 4;
+
   return (
     <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4 py-10">
-
       <a href="/" className="text-2xl font-bold mb-10">
         via<span className="text-violet-500">.ai</span>
       </a>
@@ -143,11 +134,11 @@ async function mailIleDevam() {
       {/* Progress bar */}
       <div className="w-full max-w-md mb-8">
         <div className="flex gap-2">
-          {[1, 2, 3].map(i => (
-            <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= adim ? 'bg-violet-500' : 'bg-zinc-800'}`} />
+          {Array.from({ length: toplamAdim }, (_, i) => (
+            <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i + 1 <= adim ? 'bg-violet-500' : 'bg-zinc-800'}`} />
           ))}
         </div>
-        <p className="text-zinc-500 text-sm mt-2">Adım {adim} / 3</p>
+        <p className="text-zinc-500 text-sm mt-2">Adım {adim} / {toplamAdim}</p>
       </div>
 
       {/* ADIM 1 — Hesap oluştur */}
@@ -156,32 +147,25 @@ async function mailIleDevam() {
           <h2 className="text-2xl font-bold mb-2">Hesap oluştur</h2>
           <p className="text-zinc-400 mb-6">Ücretsiz başla, 14 gün dene.</p>
 
-          {/* Kullanıcı türü seçimi */}
           <div className="grid grid-cols-2 gap-3 mb-6">
-            <button
-              onClick={() => setForm({ ...form, kullanici_turu: 'isletme' })}
-              className={`p-4 rounded-xl border text-sm transition flex flex-col items-center gap-2 ${
-                form.kullanici_turu === 'isletme'
-                  ? 'border-violet-500 bg-violet-600/20 text-white'
-                  : 'border-zinc-800 bg-zinc-900 text-zinc-400'
-              }`}
-            >
-              <span className="text-2xl">🏪</span>
-              <span className="font-semibold">İşletme</span>
-              <span className="text-xs text-zinc-500">Kafe, berber, mağaza...</span>
-            </button>
-            <button
-              onClick={() => setForm({ ...form, kullanici_turu: 'sahis' })}
-              className={`p-4 rounded-xl border text-sm transition flex flex-col items-center gap-2 ${
-                form.kullanici_turu === 'sahis'
-                  ? 'border-violet-500 bg-violet-600/20 text-white'
-                  : 'border-zinc-800 bg-zinc-900 text-zinc-400'
-              }`}
-            >
-              <span className="text-2xl">👤</span>
-              <span className="font-semibold">Şahıs</span>
-              <span className="text-xs text-zinc-500">Influencer, içerik üretici...</span>
-            </button>
+            {[
+              { tur: 'isletme', icon: '🏪', ad: 'İşletme', aciklama: 'Kafe, berber, mağaza...' },
+              { tur: 'sahis', icon: '👤', ad: 'Şahıs', aciklama: 'Influencer, içerik üretici...' },
+            ].map(({ tur, icon, ad, aciklama }) => (
+              <button
+                key={tur}
+                onClick={() => setForm({ ...form, kullanici_turu: tur })}
+                className={`p-4 rounded-xl border text-sm transition flex flex-col items-center gap-2 ${
+                  form.kullanici_turu === tur
+                    ? 'border-violet-500 bg-violet-600/20 text-white'
+                    : 'border-zinc-800 bg-zinc-900 text-zinc-400'
+                }`}
+              >
+                <span className="text-2xl">{icon}</span>
+                <span className="font-semibold">{ad}</span>
+                <span className="text-xs text-zinc-500">{aciklama}</span>
+              </button>
+            ))}
           </div>
 
           <div className="space-y-4">
@@ -192,16 +176,9 @@ async function mailIleDevam() {
               onChange={e => setForm({ ...form, email: e.target.value })}
               className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
             />
-            <input
-              type="password"
-              placeholder="Şifre (min. 6 karakter)"
-              value={form.sifre}
-              onChange={e => setForm({ ...form, sifre: e.target.value })}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
-            />
             <button
               onClick={mailIleDevam}
-              disabled={yukleniyor || !form.email || form.sifre.length < 6}
+              disabled={yukleniyor || !form.email}
               className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 py-3 rounded-xl font-semibold transition"
             >
               {yukleniyor ? '⏳ Gönderiliyor...' : 'Mail ile Devam Et →'}
@@ -234,7 +211,7 @@ async function mailIleDevam() {
         </div>
       )}
 
-      {/* Doğrulama kodu ekranı */}
+      {/* Doğrulama kodu */}
       {adim === 1 && dogrulamaGonderildi && (
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
@@ -260,17 +237,15 @@ async function mailIleDevam() {
             >
               {yukleniyor ? '⏳ Doğrulanıyor...' : 'Doğrula →'}
             </button>
-            <button
-              onClick={() => setDogrulamaGonderildi(false)}
-              className="w-full text-zinc-500 hover:text-white text-sm transition py-2"
-            >
+            <button onClick={() => setDogrulamaGonderildi(false)}
+              className="w-full text-zinc-500 hover:text-white text-sm transition py-2">
               ← Geri dön
             </button>
           </div>
         </div>
       )}
 
-      {/* ADIM 2 — İşletme / Şahıs bilgileri */}
+      {/* ADIM 2 — İşletme/Şahıs bilgileri */}
       {adim === 2 && (
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-bold mb-2">
@@ -286,7 +261,7 @@ async function mailIleDevam() {
               className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
             />
 
-            {form.kullanici_turu === 'isletme' && (
+            {form.kullanici_turu === 'isletme' ? (
               <div>
                 <label className="text-sm text-zinc-400 mb-2 block">Sektörün</label>
                 <input
@@ -305,16 +280,12 @@ async function mailIleDevam() {
                   <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-h-40 overflow-y-auto">
                     {filtreliSektorler.length > 0 ? filtreliSektorler.map(s => (
                       <button key={s} onClick={() => { setForm({ ...form, sektor: s }); setSektorArama(s); }}
-                        className="w-full text-left px-4 py-2 text-sm hover:bg-zinc-800 transition text-zinc-300">
-                        {s}
-                      </button>
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-zinc-800 transition text-zinc-300">{s}</button>
                     )) : <div className="px-4 py-2 text-sm text-zinc-500">Sonuç bulunamadı</div>}
                   </div>
                 )}
               </div>
-            )}
-
-            {form.kullanici_turu === 'sahis' && (
+            ) : (
               <div>
                 <label className="text-sm text-zinc-400 mb-2 block">İlgi alanın / Niş</label>
                 <input
@@ -345,9 +316,7 @@ async function mailIleDevam() {
                 <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-h-40 overflow-y-auto">
                   {filtreliSehirler.length > 0 ? filtreliSehirler.map(s => (
                     <button key={s} onClick={() => { setForm({ ...form, sehir: s }); setSehirArama(s); }}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-zinc-800 transition text-zinc-300">
-                      {s}
-                    </button>
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-zinc-800 transition text-zinc-300">{s}</button>
                   )) : <div className="px-4 py-2 text-sm text-zinc-500">Sonuç bulunamadı</div>}
                 </div>
               )}
@@ -355,7 +324,7 @@ async function mailIleDevam() {
 
             <button
               onClick={() => setAdim(3)}
-              disabled={!form.isletme_adi || !form.sehir || (form.kullanici_turu === 'isletme' && !form.sektor) || (form.kullanici_turu === 'sahis' && !form.sektor)}
+              disabled={!form.isletme_adi || !form.sehir || !form.sektor}
               className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 py-3 rounded-xl font-semibold transition"
             >
               Devam Et →
@@ -364,8 +333,68 @@ async function mailIleDevam() {
         </div>
       )}
 
-      {/* ADIM 3 — Hedef */}
+      {/* ADIM 3 — Sosyal Medya Hesapları */}
       {adim === 3 && (
+        <div className="w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-2">Sosyal medya hesapların</h2>
+          <p className="text-zinc-400 mb-6">AI haftalık büyümeni takip etsin, sana özel analiz yapsın.</p>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-zinc-400 mb-2 block">Instagram Kullanıcı Adı</label>
+              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus-within:border-violet-500 transition">
+                <span className="text-zinc-500">@</span>
+                <input
+                  type="text"
+                  placeholder="kullaniciadi"
+                  value={form.instagram_kullanici}
+                  onChange={e => setForm({ ...form, instagram_kullanici: e.target.value.replace('@', '') })}
+                  className="flex-1 bg-transparent focus:outline-none text-white"
+                />
+                <span className="text-pink-400 text-lg">📷</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm text-zinc-400 mb-2 block">TikTok Kullanıcı Adı</label>
+              <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus-within:border-violet-500 transition">
+                <span className="text-zinc-500">@</span>
+                <input
+                  type="text"
+                  placeholder="kullaniciadi"
+                  value={form.tiktok_kullanici}
+                  onChange={e => setForm({ ...form, tiktok_kullanici: e.target.value.replace('@', '') })}
+                  className="flex-1 bg-transparent focus:outline-none text-white"
+                />
+                <span className="text-lg">🎵</span>
+              </div>
+            </div>
+
+            <div className="bg-zinc-800 rounded-xl p-3">
+              <p className="text-xs text-zinc-500">
+                💡 Hesapların herkese açık olmalı. AI her hafta performansını analiz edip sana rapor sunacak.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setAdim(4)}
+              disabled={!form.instagram_kullanici && !form.tiktok_kullanici}
+              className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 py-3 rounded-xl font-semibold transition"
+            >
+              Devam Et →
+            </button>
+            <button
+              onClick={() => setAdim(4)}
+              className="w-full text-zinc-500 hover:text-white text-sm transition py-2"
+            >
+              Şimdilik atla →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ADIM 4 — Hedef */}
+      {adim === 4 && (
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-bold mb-2">Hedefin ne?</h2>
           <p className="text-zinc-400 mb-8">AI içerikleri buna göre üretecek.</p>
@@ -394,7 +423,6 @@ async function mailIleDevam() {
           </button>
         </div>
       )}
-
     </main>
   );
 }
