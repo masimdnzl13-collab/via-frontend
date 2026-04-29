@@ -24,18 +24,18 @@ const istatistikler = [
 ];
 
 const ozellikler = [
-  { icon: '🔍', baslik: 'Algoritma & SEO', aciklama: 'Instagram ve TikTok algoritmasını anla, içeriklerini öne çıkar.', href: '/ozellik/algoritma-seo', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Analiz et →' },
-  { icon: '🎬', baslik: 'İçerik Serisi', aciklama: 'Birbirine bağlı içerik serileri oluştur, takipçi bağlılığını artır.', href: '/ozellik/icerik-serisi', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Seri oluştur →' },
-  { icon: '🚨', baslik: 'Kriz Yönetimi', aciklama: 'Olumsuz yorum veya kriz anında nasıl yanıt vereceğini öğren.', href: '/ozellik/kriz-yonetimi', renk: 'hover:border-red-500', linkRenk: 'text-red-400', link: 'Hızlı yanıt →' },
-  { icon: '🚀', baslik: 'Lansman Planı', aciklama: 'Yeni ürün veya hizmet lansmanı için adım adım plan oluştur.', href: '/ozellik/lansman', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Plan oluştur →' },
-  { icon: '👥', baslik: 'Müşteri Analizi', aciklama: 'Hedef kitlenı analiz et, en doğru kişilere ulaş.', href: '/ozellik/musteri-analizi', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Analiz et →' },
-  { icon: '📤', baslik: 'Paylaşımla Büyü', aciklama: 'Viral paylaşım stratejileri ve işbirliği fırsatlarını keşfet.', href: '/ozellik/paylasimle-buyume', renk: 'hover:border-green-500', linkRenk: 'text-green-400', link: 'Keşfet →' },
-  { icon: '📊', baslik: 'Performans Tahmini', aciklama: 'İçeriğini paylaşmadan önce performansını tahmin et.', href: '/ozellik/performans-tahmin', renk: 'hover:border-amber-500', linkRenk: 'text-amber-400', link: 'Tahmin et →' },
-  { icon: '🔎', baslik: 'Profil Denetimi', aciklama: 'Instagram ve TikTok profilini analiz et, eksiklerini gör.', href: '/ozellik/profil-denetim', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Denetle →' },
-  { icon: '⚔️', baslik: 'Rakip Analizi', aciklama: 'Rakiplerini takip et, onlardan önce trende gir.', href: '/ozellik/rakip', renk: 'hover:border-red-500', linkRenk: 'text-red-400', link: 'Rakibi gör →' },
-  { icon: '🕐', baslik: 'En İyi Saat Bulucu', aciklama: 'Takipçilerin en aktif olduğu saatleri bul, o saatte paylaş.', href: '/ozellik/saat-bulucu', renk: 'hover:border-blue-500', linkRenk: 'text-blue-400', link: 'Saati bul →' },
-  { icon: '🏄', baslik: 'Trend Sörfçüsü', aciklama: 'Anlık trendleri yakala, viral olmadan önce pozisyon al.', href: '/ozellik/trend-surfcu', renk: 'hover:border-green-500', linkRenk: 'text-green-400', link: 'Trende bin →' },
-  { icon: '📈', baslik: 'Aylık Rapor', aciklama: 'Tüm istatistiklerin, büyüme analizin ve öneriler.', href: null, renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Raporu gör →' },
+  { icon: '🔍', baslik: 'Algoritma & SEO', aciklama: 'Instagram ve TikTok algoritmasını anla, içeriklerini öne çıkar.', href: '/algoritma-seo', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Analiz et →' },
+  { icon: '🎬', baslik: 'İçerik Serisi', aciklama: 'Birbirine bağlı içerik serileri oluştur, takipçi bağlılığını artır.', href: '/icerik-serisi', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Seri oluştur →' },
+  { icon: '🚨', baslik: 'Kriz Yönetimi', aciklama: 'Olumsuz yorum veya kriz anında nasıl yanıt vereceğini öğren.', href: '/kriz-yonetimi', renk: 'hover:border-red-500', linkRenk: 'text-red-400', link: 'Hızlı yanıt →' },
+  { icon: '🚀', baslik: 'Lansman Planı', aciklama: 'Yeni ürün veya hizmet lansmanı için adım adım plan oluştur.', href: '/lansman', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Plan oluştur →' },
+  { icon: '👥', baslik: 'Müşteri Analizi', aciklama: 'Hedef kitlenı analiz et, en doğru kişilere ulaş.', href: '/musteri-analizi', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Analiz et →' },
+  { icon: '📤', baslik: 'Paylaşımla Büyü', aciklama: 'Viral paylaşım stratejileri ve işbirliği fırsatlarını keşfet.', href: '/paylasimla-buyume', renk: 'hover:border-green-500', linkRenk: 'text-green-400', link: 'Keşfet →' },
+  { icon: '📊', baslik: 'Performans Tahmini', aciklama: 'İçeriğini paylaşmadan önce performansını tahmin et.', href: '/performans-tahmin', renk: 'hover:border-amber-500', linkRenk: 'text-amber-400', link: 'Tahmin et →' },
+  { icon: '🔎', baslik: 'Profil Denetimi', aciklama: 'Instagram ve TikTok profilini analiz et, eksiklerini gör.', href: '/profil-denetim', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Denetle →' },
+  { icon: '⚔️', baslik: 'Rakip Analizi', aciklama: 'Rakiplerini takip et, onlardan önce trende gir.', href: '/rakip-analizi', renk: 'hover:border-red-500', linkRenk: 'text-red-400', link: 'Rakibi gör →' },
+  { icon: '🕐', baslik: 'En İyi Saat Bulucu', aciklama: 'Takipçilerin en aktif olduğu saatleri bul, o saatte paylaş.', href: '/saat-bulucu', renk: 'hover:border-blue-500', linkRenk: 'text-blue-400', link: 'Saati bul →' },
+  { icon: '🏄', baslik: 'Trend Sörfçüsü', aciklama: 'Anlık trendleri yakala, viral olmadan önce pozisyon al.', href: '/trend-surfcu', renk: 'hover:border-green-500', linkRenk: 'text-green-400', link: 'Trende bin →' },
+  { icon: '📈', baslik: 'Aylık Rapor', aciklama: 'Tüm istatistiklerin, büyüme analizin ve öneriler.', href: '/aylik-rapor', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Raporu gör →' },
 ];
 
 export default function Dashboard() {
