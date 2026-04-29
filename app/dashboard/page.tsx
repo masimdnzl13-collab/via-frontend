@@ -44,13 +44,13 @@ export default function Dashboard() {
   const [istatistikModal, setIstatistikModal] = useState(false);
   const [seciliIcerik, setSeciliIcerik] = useState<any>(null);
   const [menuAcik, setMenuAcik] = useState(false);
-const [haftalikBuyumeModal, setHaftalikBuyumeModal] = useState(false);
-const [haftalikForm, setHaftalikForm] = useState({
-  instagram_takipci: '', instagram_izlenme: '', instagram_begeni: '', instagram_paylasim: '',
-  tiktok_takipci: '', tiktok_izlenme: '', tiktok_begeni: '', tiktok_paylasim: '',
-});
-const [haftalikSonuc, setHaftalikSonuc] = useState('');
-const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
+  const [haftalikBuyumeModal, setHaftalikBuyumeModal] = useState(false);
+  const [haftalikForm, setHaftalikForm] = useState({
+    instagram_takipci: '', instagram_izlenme: '', instagram_begeni: '', instagram_paylasim: '',
+    tiktok_takipci: '', tiktok_izlenme: '', tiktok_begeni: '', tiktok_paylasim: '',
+  });
+  const [haftalikSonuc, setHaftalikSonuc] = useState('');
+  const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
 
   useEffect(() => {
     async function profilGetir() {
@@ -61,6 +61,31 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
     }
     profilGetir();
   }, []);
+
+  async function haftalikAnalizOlustur() {
+    setHaftalikYukleniyor(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const buHafta = new Date().toISOString().split('T')[0];
+      await supabase.from('haftalik_veriler').upsert({
+        user_id: user?.id,
+        hafta_baslangic: buHafta,
+        ...Object.fromEntries(
+          Object.entries(haftalikForm).map(([k, v]) => [k, parseInt(v as string) || 0])
+        ),
+      });
+      const res = await fetch('/api/haftalik-analiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profil, veriler: haftalikForm }),
+      });
+      const data = await res.json();
+      setHaftalikSonuc(data.analiz);
+    } catch {
+      alert('Hata oluştu.');
+    }
+    setHaftalikYukleniyor(false);
+  }
 
   if (!profil) {
     return (
@@ -73,62 +98,62 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
   return (
     <main className="min-h-screen bg-black text-white">
 
+      {/* NAVBAR */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-10">
-  <div className="flex items-center gap-3">
-    <div className="text-xl font-bold">via<span className="text-violet-500">.ai</span></div>
-    {profil && (
-      <div className="flex items-center gap-2">
-        <span className="text-zinc-600">·</span>
-        <span className="text-zinc-300 text-sm font-medium">{profil.isletme_adi}</span>
-      </div>
-    )}
-  </div>
-  <div className="relative">
-    <button
-      onClick={() => setMenuAcik(!menuAcik)}
-      className="w-9 h-9 flex flex-col items-center justify-center gap-1.5 hover:bg-zinc-800 rounded-xl transition"
-    >
-      <span className="w-5 h-0.5 bg-white rounded-full" />
-      <span className="w-5 h-0.5 bg-white rounded-full" />
-      <span className="w-5 h-0.5 bg-white rounded-full" />
-    </button>
-    {menuAcik && (
-      <div className="absolute right-0 top-12 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
-        <div className="p-4 border-b border-zinc-800">
-          <p className="text-white font-semibold text-sm">{profil?.isletme_adi}</p>
-          <p className="text-zinc-500 text-xs mt-0.5">{profil?.sektor} · {profil?.sehir}</p>
+        <div className="flex items-center gap-3">
+          <div className="text-xl font-bold">via<span className="text-violet-500">.ai</span></div>
+          <span className="text-zinc-600">·</span>
+          <span className="text-zinc-300 text-sm font-medium">{profil.isletme_adi}</span>
         </div>
-        <div className="p-2">
-          {[
-            { icon: '👤', ad: 'Profil', href: '/profil' },
-            { icon: '💳', ad: 'Abonelik', href: '/abonelik' },
-            { icon: '⚙️', ad: 'Ayarlar', href: '/ayarlar' },
-            { icon: '📊', ad: 'Aylık Rapor', href: '/aylik-rapor' },
-            { icon: '📱', ad: 'Sosyal Medya', href: '/ayarlar#sosyal' },
-            { icon: '❓', ad: 'Yardım', href: '/yardim' },
-          ].map((item) => (
-            <a key={item.ad} href={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-800 transition text-sm text-zinc-300 hover:text-white">
-              <span>{item.icon}</span>
-              <span>{item.ad}</span>
-            </a>
-          ))}
-          <div className="border-t border-zinc-800 mt-2 pt-2">
-            <button
-              onClick={async () => { await supabase.auth.signOut(); window.location.href = '/'; }}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 transition text-sm text-red-400 w-full text-left"
-            >
-              <span>🚪</span>
-              <span>Çıkış Yap</span>
-            </button>
-          </div>
+        <div className="relative">
+          <button
+            onClick={() => setMenuAcik(!menuAcik)}
+            className="w-9 h-9 flex flex-col items-center justify-center gap-1.5 hover:bg-zinc-800 rounded-xl transition"
+          >
+            <span className="w-5 h-0.5 bg-white rounded-full" />
+            <span className="w-5 h-0.5 bg-white rounded-full" />
+            <span className="w-5 h-0.5 bg-white rounded-full" />
+          </button>
+          {menuAcik && (
+            <div className="absolute right-0 top-12 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
+              <div className="p-4 border-b border-zinc-800">
+                <p className="text-white font-semibold text-sm">{profil.isletme_adi}</p>
+                <p className="text-zinc-500 text-xs mt-0.5">{profil.sektor} · {profil.sehir}</p>
+              </div>
+              <div className="p-2">
+                {[
+                  { icon: '👤', ad: 'Profil', href: '/profil' },
+                  { icon: '💳', ad: 'Abonelik', href: '/abonelik' },
+                  { icon: '⚙️', ad: 'Ayarlar', href: '/ayarlar' },
+                  { icon: '📊', ad: 'Aylık Rapor', href: '/aylik-rapor' },
+                  { icon: '📱', ad: 'Sosyal Medya', href: '/ayarlar' },
+                  { icon: '❓', ad: 'Yardım', href: '/yardim' },
+                ].map((item) => (
+                  <a key={item.ad} href={item.href}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-zinc-800 transition text-sm text-zinc-300 hover:text-white">
+                    <span>{item.icon}</span>
+                    <span>{item.ad}</span>
+                  </a>
+                ))}
+                <div className="border-t border-zinc-800 mt-2 pt-2">
+                  <button
+                    onClick={async () => { await supabase.auth.signOut(); window.location.href = '/'; }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 transition text-sm text-red-400 w-full text-left"
+                  >
+                    <span>🚪</span>
+                    <span>Çıkış Yap</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    )}
-  </div>
-</nav>
+      </nav>
 
-        {/* Üst 4 kart */}
+      {/* ANA İÇERİK */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+
+        {/* ÜST 4 KART */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
             <p className="text-zinc-500 text-xs mb-1">Sektör</p>
@@ -139,28 +164,26 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
             <p className="text-zinc-500 text-xs mb-1">Hedefin</p>
             <p className="text-base font-bold">{profil.hedef}</p>
           </div>
-          <div onClick={() => setHaftalikModal(true)}
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-violet-500 transition group">
+          <div
+            onClick={() => setHaftalikModal(true)}
+            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-violet-500 transition group"
+          >
             <p className="text-zinc-500 text-xs mb-1">Bu hafta içerik</p>
             <p className="text-3xl font-bold">5</p>
             <p className="text-green-400 text-xs mt-1 group-hover:text-violet-400 transition">↑ Planlandı — tıkla</p>
           </div>
-          <div onClick={() => setIstatistikModal(true)}
-            className="bg-violet-600 rounded-2xl p-5 cursor-pointer hover:bg-violet-700 transition">
-            <p className="text-white/70 text-xs mb-1">Aylık Büyüme</p>
-            <div onClick={() => setHaftalikBuyumeModal(true)}
-  className="bg-violet-600 rounded-2xl p-5 cursor-pointer hover:bg-violet-700 transition">
-  <p className="text-white/70 text-xs mb-1">Haftalık Büyüme</p>
-  <p className="text-3xl font-bold">+18%</p>
-  <p className="text-white/60 text-xs mt-1">Bu hafta · tıkla</p>
-</div>
+          <div
+            onClick={() => setHaftalikBuyumeModal(true)}
+            className="bg-violet-600 rounded-2xl p-5 cursor-pointer hover:bg-violet-700 transition"
+          >
+            <p className="text-white/70 text-xs mb-1">Haftalık Büyüme</p>
+            <p className="text-3xl font-bold">+18%</p>
+            <p className="text-white/60 text-xs mt-1">Bu hafta · tıkla</p>
           </div>
         </div>
 
-        {/* Orta 3 kolon */}
+        {/* ORTA 3 KOLON */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-          {/* Sol — Bugün ne yapmalısın */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <h2 className="text-sm font-semibold mb-4">📋 Bugün ne yapmalısın?</h2>
             <div className="space-y-3">
@@ -184,7 +207,6 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
             </div>
           </div>
 
-          {/* Orta — İçerik üret */}
           <div className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col">
             <h2 className="text-sm font-semibold mb-2">✨ İçerik üret</h2>
             <p className="text-zinc-400 text-xs mb-4 flex-1">AI ile sohbet et, sektörüne özel viral içerik fikirleri al.</p>
@@ -203,7 +225,6 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
             </div>
           </div>
 
-          {/* Sağ — Hızlı istatistikler */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <h2 className="text-sm font-semibold mb-3">📈 Bu ay</h2>
             <div className="grid grid-cols-2 gap-3">
@@ -215,17 +236,17 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
                 </div>
               ))}
             </div>
-            <button onClick={() => setIstatistikModal(true)}
-              className="w-full mt-3 text-xs text-violet-400 hover:text-violet-300 transition py-2 border border-zinc-800 rounded-xl hover:border-violet-500">
+            <button
+              onClick={() => setIstatistikModal(true)}
+              className="w-full mt-3 text-xs text-violet-400 hover:text-violet-300 transition py-2 border border-zinc-800 rounded-xl hover:border-violet-500"
+            >
               Tam raporu gör →
             </button>
           </div>
-
         </div>
 
-        {/* 2. sıra — Son performans, AI Koç, Reklam */}
+        {/* 2. SIRA */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
             <h2 className="text-sm font-semibold mb-3">📊 Son performans</h2>
             <div className="space-y-3">
@@ -270,47 +291,35 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
                 <p className="text-base font-bold">100 TL/gün</p>
                 <p className="text-xs text-zinc-500">5 gün · 18-35 yaş</p>
               </div>
-              <a href="/icerik" className="block text-center text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-2 rounded-lg transition text-zinc-400 hover:text-white">
+              <a href="/icerik"
+                className="block text-center text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-2 rounded-lg transition text-zinc-400 hover:text-white">
                 Reklam planı oluştur →
               </a>
             </div>
           </div>
-
         </div>
 
-        {/* Tüm özellikler — tam genişlik 4'lü grid */}
+        {/* TÜM ARAÇLAR */}
         <div className="mb-2">
           <h2 className="text-sm font-semibold text-zinc-400 mb-4">🛠️ Tüm araçlar</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {ozellikler.map((o, i) => (
-              o.href ? (
-                <a key={i} href={o.href}
-                  className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-5 ${o.renk} transition group block`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">{o.icon}</span>
-                    <h3 className="text-sm font-semibold leading-tight">{o.baslik}</h3>
-                  </div>
-                  <p className="text-xs text-zinc-500 leading-relaxed mb-3">{o.aciklama}</p>
-                  <p className={`text-xs ${o.linkRenk} group-hover:opacity-70`}>{o.link}</p>
-                </a>
-              ) : (
-                <div key={i} onClick={() => setIstatistikModal(true)}
-                  className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-5 ${o.renk} transition group cursor-pointer`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">{o.icon}</span>
-                    <h3 className="text-sm font-semibold leading-tight">{o.baslik}</h3>
-                  </div>
-                  <p className="text-xs text-zinc-500 leading-relaxed mb-3">{o.aciklama}</p>
-                  <p className={`text-xs ${o.linkRenk} group-hover:opacity-70`}>{o.link}</p>
+              <a key={i} href={o.href}
+                className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-5 ${o.renk} transition group block`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">{o.icon}</span>
+                  <h3 className="text-sm font-semibold leading-tight">{o.baslik}</h3>
                 </div>
-              )
+                <p className="text-xs text-zinc-500 leading-relaxed mb-3">{o.aciklama}</p>
+                <p className={`text-xs ${o.linkRenk} group-hover:opacity-70`}>{o.link}</p>
+              </a>
             ))}
           </div>
         </div>
 
       </div>
 
-      {/* Haftalık plan modal */}
+      {/* HAFTALIK PLAN MODAL */}
       {haftalikModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => { setHaftalikModal(false); setSeciliIcerik(null); }}>
@@ -339,9 +348,7 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
             ) : (
               <div className="p-6">
                 <button onClick={() => setSeciliIcerik(null)}
-                  className="text-zinc-500 hover:text-white text-sm mb-4 transition flex items-center gap-2">
-                  ← Geri
-                </button>
+                  className="text-zinc-500 hover:text-white text-sm mb-4 transition">← Geri</button>
                 <div className="bg-violet-600/10 border border-violet-500/30 rounded-xl p-4 mb-4">
                   <p className="text-xs text-violet-400 mb-1">{seciliIcerik.gun}</p>
                   <p className="text-base font-bold">{seciliIcerik.icerik}</p>
@@ -359,162 +366,141 @@ const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
         </div>
       )}
 
+      {/* HAFTALIK BÜYÜME MODAL */}
       {haftalikBuyumeModal && (
-  <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}>
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
-      onClick={e => e.stopPropagation()}>
-      <div className="p-6 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-zinc-900">
-        <div>
-          <h2 className="text-lg font-bold">📈 Haftalık Büyüme</h2>
-          <p className="text-zinc-500 text-xs mt-0.5">Bu haftanın verilerini gir, AI analiz etsin</p>
-        </div>
-        <button onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}
-          className="text-zinc-500 hover:text-white text-xl transition">×</button>
-      </div>
-
-      {!haftalikSonuc ? (
-        <div className="p-5 space-y-5">
-          {profil?.instagram_kullanici && (
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-pink-400">📷</span>
-                <p className="text-sm font-semibold">Instagram — @{profil.instagram_kullanici}</p>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-zinc-900">
+              <div>
+                <h2 className="text-lg font-bold">📈 Haftalık Büyüme</h2>
+                <p className="text-zinc-500 text-xs mt-0.5">Bu haftanın verilerini gir, AI analiz etsin</p>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { key: 'instagram_takipci', label: 'Takipçi Artışı', placeholder: '+150' },
-                  { key: 'instagram_izlenme', label: 'Toplam İzlenme', placeholder: '25000' },
-                  { key: 'instagram_begeni', label: 'Toplam Beğeni', placeholder: '3200' },
-                  { key: 'instagram_paylasim', label: 'Paylaşım Sayısı', placeholder: '5' },
-                ].map(({ key, label, placeholder }) => (
-                  <div key={key}>
-                    <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
-                    <input
-                      type="number"
-                      placeholder={placeholder}
-                      value={(haftalikForm as any)[key]}
-                      onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-pink-500 transition"
-                    />
-                  </div>
-                ))}
-              </div>
+              <button onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}
+                className="text-zinc-500 hover:text-white text-xl transition">×</button>
             </div>
-          )}
 
-          {profil?.tiktok_kullanici && (
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span>🎵</span>
-                <p className="text-sm font-semibold">TikTok — @{profil.tiktok_kullanici}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { key: 'tiktok_takipci', label: 'Takipçi Artışı', placeholder: '+200' },
-                  { key: 'tiktok_izlenme', label: 'Toplam İzlenme', placeholder: '50000' },
-                  { key: 'tiktok_begeni', label: 'Toplam Beğeni', placeholder: '8000' },
-                  { key: 'tiktok_paylasim', label: 'Paylaşım Sayısı', placeholder: '7' },
-                ].map(({ key, label, placeholder }) => (
-                  <div key={key}>
-                    <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
-                    <input
-                      type="number"
-                      placeholder={placeholder}
-                      value={(haftalikForm as any)[key]}
-                      onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
-                      className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!profil?.instagram_kullanici && !profil?.tiktok_kullanici && (
-            <div className="text-center py-6">
-              <p className="text-zinc-400 text-sm mb-3">Henüz sosyal medya hesabı eklenmemiş.</p>
-              <a href="/ayarlar" className="text-violet-400 text-sm hover:text-violet-300">
-                Hesap ekle →
-              </a>
-            </div>
-          )}
-
-          <button
-            onClick={async () => {
-              setHaftalikYukleniyor(true);
-              try {
-                const { data: { user } } = await supabase.auth.getUser();
-                const buHafta = new Date().toISOString().split('T')[0];
-                await supabase.from('haftalik_veriler').upsert({
-                  user_id: user?.id,
-                  hafta_baslangic: buHafta,
-                  ...Object.fromEntries(
-                    Object.entries(haftalikForm).map(([k, v]) => [k, parseInt(v as string) || 0])
-                  ),
-                });
-                const res = await fetch('/api/haftalik-analiz', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ profil, veriler: haftalikForm }),
-                });
-                const data = await res.json();
-                setHaftalikSonuc(data.analiz);
-              } catch { alert('Hata oluştu.'); }
-              setHaftalikYukleniyor(false);
-            }}
-            disabled={haftalikYukleniyor || (!profil?.instagram_kullanici && !profil?.tiktok_kullanici)}
-            className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 py-3 rounded-xl text-sm font-semibold transition"
-          >
-            {haftalikYukleniyor ? 'Analiz ediliyor...' : '📊 Haftalık Analizi Oluştur'}
-          </button>
-        </div>
-      ) : (
-        <div className="p-5">
-          <div className="space-y-2">
-            {haftalikSonuc.split('\n').filter(s => s.trim()).map((satir, i) => {
-              if (satir.startsWith('[BASLIK]')) return (
-                <div key={i} className="bg-violet-600/20 border border-violet-500/40 rounded-xl px-4 py-2 mt-3">
-                  <p className="text-violet-300 font-semibold text-sm">{satir.replace('[BASLIK]', '').trim()}</p>
-                </div>
-              );
-              if (satir.startsWith('[METRIK]')) {
-                const p = satir.replace('[METRIK]', '').trim().split('|');
-                const artis = p[2]?.trim() || '';
-                const renk = artis.startsWith('+') ? 'text-green-400' : artis.startsWith('-') ? 'text-red-400' : 'text-zinc-400';
-                return (
-                  <div key={i} className="flex items-center justify-between bg-zinc-800 rounded-xl px-3 py-2">
-                    <p className="text-zinc-300 text-sm">{p[0]?.trim()}</p>
-                    <div className="text-right">
-                      <p className="text-white font-bold text-sm">{p[1]?.trim()}</p>
-                      <p className={`text-xs ${renk}`}>{artis}</p>
+            {!haftalikSonuc ? (
+              <div className="p-5 space-y-5">
+                {profil?.instagram_kullanici && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-pink-400">📷</span>
+                      <p className="text-sm font-semibold">Instagram — @{profil.instagram_kullanici}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { key: 'instagram_takipci', label: 'Takipçi Artışı', placeholder: '150' },
+                        { key: 'instagram_izlenme', label: 'Toplam İzlenme', placeholder: '25000' },
+                        { key: 'instagram_begeni', label: 'Toplam Beğeni', placeholder: '3200' },
+                        { key: 'instagram_paylasim', label: 'Paylaşım Sayısı', placeholder: '5' },
+                      ].map(({ key, label, placeholder }) => (
+                        <div key={key}>
+                          <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
+                          <input
+                            type="number"
+                            placeholder={placeholder}
+                            value={(haftalikForm as any)[key]}
+                            onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-pink-500 transition"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
-                );
-              }
-              if (satir.startsWith('[ONERI]')) return (
-                <div key={i} className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-3">
-                  <p className="text-violet-400 text-sm">{satir.replace('[ONERI]', '').trim()}</p>
+                )}
+
+                {profil?.tiktok_kullanici && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span>🎵</span>
+                      <p className="text-sm font-semibold">TikTok — @{profil.tiktok_kullanici}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { key: 'tiktok_takipci', label: 'Takipçi Artışı', placeholder: '200' },
+                        { key: 'tiktok_izlenme', label: 'Toplam İzlenme', placeholder: '50000' },
+                        { key: 'tiktok_begeni', label: 'Toplam Beğeni', placeholder: '8000' },
+                        { key: 'tiktok_paylasim', label: 'Paylaşım Sayısı', placeholder: '7' },
+                      ].map(({ key, label, placeholder }) => (
+                        <div key={key}>
+                          <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
+                          <input
+                            type="number"
+                            placeholder={placeholder}
+                            value={(haftalikForm as any)[key]}
+                            onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {!profil?.instagram_kullanici && !profil?.tiktok_kullanici && (
+                  <div className="text-center py-6">
+                    <p className="text-zinc-400 text-sm mb-3">Henüz sosyal medya hesabı eklenmemiş.</p>
+                    <a href="/ayarlar" className="text-violet-400 text-sm hover:text-violet-300">Hesap ekle →</a>
+                  </div>
+                )}
+
+                <button
+                  onClick={haftalikAnalizOlustur}
+                  disabled={haftalikYukleniyor || (!profil?.instagram_kullanici && !profil?.tiktok_kullanici)}
+                  className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 py-3 rounded-xl text-sm font-semibold transition"
+                >
+                  {haftalikYukleniyor ? 'Analiz ediliyor...' : '📊 Haftalık Analizi Oluştur'}
+                </button>
+              </div>
+            ) : (
+              <div className="p-5">
+                <div className="space-y-2">
+                  {haftalikSonuc.split('\n').filter(s => s.trim()).map((satir, i) => {
+                    if (satir.startsWith('[BASLIK]')) return (
+                      <div key={i} className="bg-violet-600/20 border border-violet-500/40 rounded-xl px-4 py-2 mt-3">
+                        <p className="text-violet-300 font-semibold text-sm">{satir.replace('[BASLIK]', '').trim()}</p>
+                      </div>
+                    );
+                    if (satir.startsWith('[METRIK]')) {
+                      const p = satir.replace('[METRIK]', '').trim().split('|');
+                      const artis = p[2]?.trim() || '';
+                      const renk = artis.startsWith('+') ? 'text-green-400' : artis.startsWith('-') ? 'text-red-400' : 'text-zinc-400';
+                      return (
+                        <div key={i} className="flex items-center justify-between bg-zinc-800 rounded-xl px-3 py-2">
+                          <p className="text-zinc-300 text-sm">{p[0]?.trim()}</p>
+                          <div className="text-right">
+                            <p className="text-white font-bold text-sm">{p[1]?.trim()}</p>
+                            <p className={`text-xs ${renk}`}>{artis}</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    if (satir.startsWith('[ONERI]')) return (
+                      <div key={i} className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-3">
+                        <p className="text-violet-400 text-sm">{satir.replace('[ONERI]', '').trim()}</p>
+                      </div>
+                    );
+                    if (satir.startsWith('[IPUCU]')) return (
+                      <div key={i} className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
+                        <p className="text-amber-400 text-xs">{satir.replace('[IPUCU]', '').trim()}</p>
+                      </div>
+                    );
+                    return null;
+                  })}
                 </div>
-              );
-              if (satir.startsWith('[IPUCU]')) return (
-                <div key={i} className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
-                  <p className="text-amber-400 text-xs">{satir.replace('[IPUCU]', '').trim()}</p>
-                </div>
-              );
-              return null;
-            })}
+                <button onClick={() => setHaftalikSonuc('')}
+                  className="w-full mt-4 text-zinc-500 hover:text-white text-sm transition py-2">
+                  ← Verileri güncelle
+                </button>
+              </div>
+            )}
           </div>
-          <button onClick={() => setHaftalikSonuc('')}
-            className="w-full mt-4 text-zinc-500 hover:text-white text-sm transition py-2">
-            ← Verileri güncelle
-          </button>
         </div>
       )}
-    </div>
-  </div>
-)}
-      {/* İstatistik modal */}
+
+      {/* İSTATİSTİK MODAL */}
       {istatistikModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setIstatistikModal(false)}>
