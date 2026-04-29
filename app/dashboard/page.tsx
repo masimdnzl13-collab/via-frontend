@@ -185,6 +185,16 @@ export default function Dashboard() {
     Seri Oluştur →
   </a>
 </div>
+<div className="bg-gradient-to-br from-pink-600/10 to-violet-600/10 border border-pink-500/30 rounded-2xl p-6">
+  <div className="flex items-center gap-2 mb-2">
+    <h2 className="text-lg font-semibold">🏄 Trend Sürfçüsü</h2>
+    <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-pulse">CANLI</span>
+  </div>
+  <p className="text-zinc-400 text-sm mb-4">Bugün patlayan trendleri yakala.</p>
+  <a href="/trend-surfcu" className="block w-full bg-pink-600 hover:bg-pink-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Trendleri Gör →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
