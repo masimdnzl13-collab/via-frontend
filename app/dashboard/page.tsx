@@ -202,6 +202,20 @@ export default function Dashboard() {
     Strateji Oluştur →
   </a>
 </div>
+<div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">⏰ En İyi Saat Bulucu</h2>
+  <p className="text-zinc-400 text-sm mb-4">Sektörüne özel en iyi paylaşım saatini öğren.</p>
+  <a href="/saat-bulucu" className="block w-full bg-zinc-800 hover:bg-zinc-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Saati Bul →
+  </a>
+</div>
+<div className="bg-gradient-to-br from-yellow-600/10 to-pink-600/10 border border-yellow-500/30 rounded-2xl p-6">
+  <h2 className="text-lg font-semibold mb-2">📤 Paylaşımla Büyüme</h2>
+  <p className="text-zinc-400 text-sm mb-4">"Bunu arkadaşıma göndermem lazım" dedirt.</p>
+  <a href="/paylasimla-buyume" className="block w-full bg-yellow-600 hover:bg-yellow-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+    Viral Fikirler →
+  </a>
+</div>
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
               <h2 className="text-lg font-semibold mb-4">📊 Son performans</h2>
               <div className="space-y-3">
