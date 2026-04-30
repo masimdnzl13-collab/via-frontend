@@ -8,20 +8,36 @@ export default function SifreYenile() {
   const [yukleniyor, setYukleniyor] = useState(false);
   const [tamam, setTamam] = useState(false);
   const [hazir, setHazir] = useState(false);
+  const [hata, setHata] = useState('');
 
   useEffect(() => {
-    // URL'deki token'ı yakala ve session oluştur
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setHazir(true);
-      }
-    });
+    async function tokenYakala() {
+      const hash = window.location.hash;
+      if (!hash) { setHata('Geçersiz link.'); return; }
 
-    // Hash'ten token al
-    const hash = window.location.hash;
-    if (hash) {
+      const params = new URLSearchParams(hash.replace('#', ''));
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token') || '';
+      const type = params.get('type');
+
+      if (type !== 'recovery' || !accessToken) {
+        setHata('Geçersiz veya süresi dolmuş link.');
+        return;
+      }
+
+      const { error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+
+      if (error) {
+        setHata('Link geçersiz: ' + error.message);
+        return;
+      }
+
       setHazir(true);
     }
+    tokenYakala();
   }, []);
 
   async function sifreGuncelle() {
@@ -54,6 +70,17 @@ export default function SifreYenile() {
             <div className="text-5xl mb-4">✅</div>
             <h2 className="text-2xl font-bold mb-2">Şifre güncellendi!</h2>
             <p className="text-zinc-400">Giriş sayfasına yönlendiriliyorsunuz...</p>
+          </div>
+        ) : hata ? (
+          <div className="text-center">
+            <div className="text-5xl mb-4">❌</div>
+            <h2 className="text-2xl font-bold mb-2">Hata</h2>
+            <p className="text-zinc-400 mb-6">{hata}</p>
+            <a href="/giris" className="text-violet-400 hover:text-violet-300">← Giriş sayfasına dön</a>
+          </div>
+        ) : !hazir ? (
+          <div className="text-center">
+            <div className="text-zinc-500">Link doğrulanıyor...</div>
           </div>
         ) : (
           <>
