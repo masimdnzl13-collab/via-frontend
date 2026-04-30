@@ -75,19 +75,13 @@ export default function Home() {
             içerik stratejisi, tek platformda.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            
-              href="/kayit"
-              className="inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-8 py-3.5 rounded-full text-sm font-bold transition tracking-wide"
-            >
-              HEMEN BAŞLA →
-            </a>
-            
-              href="/giris"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-3.5 rounded-full text-sm font-semibold transition"
-            >
-              Giriş Yap
-            </a>
-          </div>
+  <a href="/kayit" className="inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-8 py-3.5 rounded-full text-sm font-bold transition tracking-wide">
+    HEMEN BAŞLA →
+  </a>
+  <a href="/giris" className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-3.5 rounded-full text-sm font-semibold transition">
+    Giriş Yap
+  </a>
+</div>
         </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-zinc-500 text-xs tracking-widest">
