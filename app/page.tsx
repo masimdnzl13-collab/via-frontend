@@ -1,47 +1,14 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { supabase } from '@/lib/supabase'; // Supabase istemci yolunu kontrol et
+import { useEffect, useRef } from 'react';
 
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  
-  // OTP ve Adım Yönetimi için State'ler
-  const [step, setStep] = useState(1); // 1: Hero, 2: OTP Ekranı
-  const [email, setEmail] = useState('m.asimdnzl13@gmail.com'); // Kayıt sayfasından gelen maili tutar
-  const [otpCode, setOtpCode] = useState('');
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.play();
     }
   }, []);
-
-  // OTP Doğrulama Fonksiyonu
-  const handleVerifyOTP = async () => {
-    if (otpCode.length !== 6) {
-      alert("Lütfen 6 haneli kodu giriniz.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: email,
-        token: otpCode,
-        type: 'signup',
-      });
-
-      if (error) throw error;
-
-      alert("Doğrulama başarılı! Dashboard'a yönlendiriliyorsunuz.");
-      // window.location.href = '/dashboard';
-    } catch (error: any) {
-      alert("Hata: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const ozellikler = [
     { icon: '🔍', baslik: 'Algoritma & SEO', aciklama: 'Instagram ve TikTok algoritmasını anla, içeriklerini öne çıkar. Google\'da üst sıralara çık.' },
@@ -76,7 +43,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      {/* HERO */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
         <video
           ref={videoRef}
@@ -94,12 +61,12 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs px-4 py-1.5 rounded-full mb-8 tracking-widest font-medium">
             ✦ YAPAY ZEKA SOSYAL MEDYA MÜHENDİSİ
           </div>
-          <h1 className="mb-6 leading-tight tracking-tight" style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(2.5rem, 7vw, 5.5rem)', fontWeight: 800 }}>
-  <span className="text-white block">YOLUNUZU</span>
-  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600 block">
-    VIA İLE ÇİZİN.
-  </span>
-</h1>
+          <h1 className="text-6xl md:text-8xl font-black mb-6 leading-none tracking-tight">
+            YOLUNUZU<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600">
+              VIA İLE ÇİZİN.
+            </span>
+          </h1>
           <p className="text-zinc-300 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
             Sosyal medya içerik planlamalarınızı ve dijital büyümenizi{' '}
             <span className="text-white font-semibold">biz inşa edelim.</span>{' '}
@@ -107,16 +74,14 @@ export default function Home() {
             <span className="text-violet-400">yapay zeka destekli</span>{' '}
             içerik stratejisi, tek platformda.
           </p>
-
-          {/* DÜZELTİLEN BUTONLAR KISMI */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
+            
               href="/kayit"
               className="inline-flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white px-8 py-3.5 rounded-full text-sm font-bold transition tracking-wide"
             >
               HEMEN BAŞLA →
             </a>
-            <a
+            
               href="/giris"
               className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-3.5 rounded-full text-sm font-semibold transition"
             >
@@ -207,7 +172,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA SECTION */}
+      {/* CTA */}
       <section className="text-center py-24 border-t border-zinc-800">
         <p className="text-violet-400 text-xs tracking-widest font-semibold mb-4">HEMEN BAŞLA</p>
         <h2 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
