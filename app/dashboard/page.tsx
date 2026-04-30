@@ -1,6 +1,49 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
+
+export default function Dashboard() {
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // 1. Sayfa ilk açıldığında session var mı bak
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/giris'); // Session yoksa giriş sayfasına at
+      } else {
+        setUser(session.user);
+      }
+    };
+    init();
+
+    // 2. Sayfa açıkken oturum kapanırsa (örneğin başka sekmeden logout) anında ana sayfaya at
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) router.push('/giris');
+      else setUser(session.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router]);
+
+  const handleCikis = async () => {
+    await supabase.auth.signOut(); // Supabase'den çıkış yap
+    router.push('/giris');
+  };
+
+  if (!user) return <div className="bg-black text-white h-screen flex items-center justify-center">Oturum Kontrol Ediliyor...</div>;
+
+  return (
+    <div className="p-10 bg-black text-white min-h-screen">
+      <div className="flex justify-between items-center">
+        <h1>Hoş geldin, {user.email}</h1>
+        <button onClick={handleCikis} className="bg-red-500 px-4 py-2 rounded">Çıkış Yap</button>
+      </div>
+    </div>
+  );
+}
 
 const haftalikPlan = [
   { gun: 'Pazartesi', icerik: 'Before/after dönüşüm videosu', durum: 'tamamlandi', detay: 'Müşterinin önceki ve sonraki halini gösteren 30 saniyelik bir reels çek. İlk 2 saniyede final sonucunu göster, sonra başa dön. Trend müzik ekle.' },
