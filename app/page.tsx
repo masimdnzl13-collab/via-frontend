@@ -94,12 +94,12 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs px-4 py-1.5 rounded-full mb-8 tracking-widest font-medium">
             ✦ YAPAY ZEKA SOSYAL MEDYA MÜHENDİSİ
           </div>
-          <h1 className="text-6xl md:text-8xl font-black mb-6 leading-none tracking-tight">
-            YOLUNUZU<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600">
-              VIA İLE ÇİZİN.
-            </span>
-          </h1>
+          <h1 className="font-black mb-6 leading-none tracking-tight" style={{ fontFamily: 'var(--font-syne)' }}>
+  <span className="text-6xl md:text-8xl text-white block">YOLUNUZU</span>
+  <span className="text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600 block">
+    VIA İLE ÇİZİN.
+  </span>
+</h1>
           <p className="text-zinc-300 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
             Sosyal medya içerik planlamalarınızı ve dijital büyümenizi{' '}
             <span className="text-white font-semibold">biz inşa edelim.</span>{' '}
