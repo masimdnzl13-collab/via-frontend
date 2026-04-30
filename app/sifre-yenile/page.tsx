@@ -7,6 +7,22 @@ export default function SifreYenile() {
   const [sifre2, setSifre2] = useState('');
   const [yukleniyor, setYukleniyor] = useState(false);
   const [tamam, setTamam] = useState(false);
+  const [hazir, setHazir] = useState(false);
+
+  useEffect(() => {
+    // URL'deki token'ı yakala ve session oluştur
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setHazir(true);
+      }
+    });
+
+    // Hash'ten token al
+    const hash = window.location.hash;
+    if (hash) {
+      setHazir(true);
+    }
+  }, []);
 
   async function sifreGuncelle() {
     if (sifre !== sifre2) { alert('Şifreler eşleşmiyor!'); return; }
@@ -15,11 +31,14 @@ export default function SifreYenile() {
 
     const { error } = await supabase.auth.updateUser({ password: sifre });
 
-    if (error) { alert('Hata: ' + error.message); setYukleniyor(false); return; }
+    if (error) {
+      alert('Hata: ' + error.message);
+      setYukleniyor(false);
+      return;
+    }
 
     setTamam(true);
     setYukleniyor(false);
-
     setTimeout(() => { window.location.href = '/giris'; }, 2000);
   }
 
