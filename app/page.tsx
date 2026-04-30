@@ -94,9 +94,9 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs px-4 py-1.5 rounded-full mb-8 tracking-widest font-medium">
             ✦ YAPAY ZEKA SOSYAL MEDYA MÜHENDİSİ
           </div>
-          <h1 className="font-black mb-6 leading-none tracking-tight" style={{ fontFamily: 'var(--font-syne)' }}>
-  <span className="text-6xl md:text-8xl text-white block">YOLUNUZU</span>
-  <span className="text-6xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600 block">
+          <h1 className="mb-6 leading-tight tracking-tight" style={{ fontFamily: 'var(--font-syne)', fontSize: 'clamp(2.5rem, 7vw, 5.5rem)', fontWeight: 800 }}>
+  <span className="text-white block">YOLUNUZU</span>
+  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-600 block">
     VIA İLE ÇİZİN.
   </span>
 </h1>
