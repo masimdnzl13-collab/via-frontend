@@ -79,28 +79,37 @@ export default function Kayit() {
     });
   }
 
-  async function mailIleDevam() {
-    setYukleniyor(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: form.email,
-      options: { shouldCreateUser: true },
-    });
-    if (error) { alert('Hata: ' + error.message); setYukleniyor(false); return; }
-    setDogrulamaGonderildi(true);
+async function mailIleDevam() {
+  setYukleniyor(true);
+
+  const { error } = await supabase.auth.signUp({
+    email: form.email,
+    password: form.sifre,
+    options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+  });
+
+  if (error) {
+    alert('Hata: ' + error.message);
     setYukleniyor(false);
+    return;
   }
 
-  async function dogrulamaYap() {
-    setYukleniyor(true);
-    const { error } = await supabase.auth.verifyOtp({
-      email: form.email,
-      token: dogrulamaKodu,
-      type: 'email',
-    });
-    if (error) { alert('Kod hatalı: ' + error.message); setYukleniyor(false); return; }
-    setAdim(2);
-    setYukleniyor(false);
-  }
+  setDogrulamaGonderildi(true);
+  setYukleniyor(false);
+}
+
+
+async function dogrulamaYap() {
+  setYukleniyor(true);
+  const { error } = await supabase.auth.verifyOtp({
+    email: form.email,
+    token: dogrulamaKodu,
+    type: 'signup',
+  });
+  if (error) { alert('Kod hatalı: ' + error.message); setYukleniyor(false); return; }
+  setAdim(2);
+  setYukleniyor(false);
+}
 
   async function kayitTamamla() {
     setYukleniyor(true);
@@ -170,19 +179,26 @@ export default function Kayit() {
 
           <div className="space-y-4">
             <input
-              type="email"
-              placeholder="E-posta adresin"
-              value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
-            />
-            <button
-              onClick={mailIleDevam}
-              disabled={yukleniyor || !form.email}
-              className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 py-3 rounded-xl font-semibold transition"
-            >
-              {yukleniyor ? '⏳ Gönderiliyor...' : 'Mail ile Devam Et →'}
-            </button>
+  type="email"
+  placeholder="E-posta adresin"
+  value={form.email}
+  onChange={e => setForm({ ...form, email: e.target.value })}
+  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
+/>
+<input
+  type="password"
+  placeholder="Şifre (min. 6 karakter)"
+  value={form.sifre}
+  onChange={e => setForm({ ...form, sifre: e.target.value })}
+  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 transition"
+/>
+<button
+  onClick={mailIleDevam}
+  disabled={yukleniyor || !form.email || form.sifre.length < 6}
+  className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 py-3 rounded-xl font-semibold transition"
+>
+  {yukleniyor ? '⏳ Gönderiliyor...' : 'Mail ile Devam Et →'}
+</button>
 
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-zinc-800" />
