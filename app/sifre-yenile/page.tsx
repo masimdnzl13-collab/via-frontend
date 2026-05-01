@@ -12,22 +12,18 @@ export default function SifreYenile() {
 
   useEffect(() => {
     async function tokenYakala() {
-      const hash = window.location.hash;
-      if (!hash) { setHata('Geçersiz link.'); return; }
-
-      const params = new URLSearchParams(hash.replace('#', ''));
-      const accessToken = params.get('access_token');
-      const refreshToken = params.get('refresh_token') || '';
+      const params = new URLSearchParams(window.location.search);
+      const tokenHash = params.get('token_hash');
       const type = params.get('type');
 
-      if (type !== 'recovery' || !accessToken) {
+      if (!tokenHash || type !== 'recovery') {
         setHata('Geçersiz veya süresi dolmuş link.');
         return;
       }
 
-      const { error } = await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: tokenHash,
+        type: 'recovery',
       });
 
       if (error) {
@@ -74,13 +70,18 @@ export default function SifreYenile() {
         ) : hata ? (
           <div className="text-center">
             <div className="text-5xl mb-4">❌</div>
-            <h2 className="text-2xl font-bold mb-2">Hata</h2>
+            <h2 className="text-2xl font-bold mb-2">Link Geçersiz</h2>
             <p className="text-zinc-400 mb-6">{hata}</p>
             <a href="/giris" className="text-violet-400 hover:text-violet-300">← Giriş sayfasına dön</a>
           </div>
         ) : !hazir ? (
           <div className="text-center">
-            <div className="text-zinc-500">Link doğrulanıyor...</div>
+            <div className="flex justify-center gap-1 mb-3">
+              <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}/>
+              <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}/>
+              <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}/>
+            </div>
+            <p className="text-zinc-500 text-sm">Link doğrulanıyor...</p>
           </div>
         ) : (
           <>
