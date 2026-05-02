@@ -36,7 +36,8 @@ export default function Giris() {
 
 async function girisYap() {
     setYukleniyor(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.sifre,
     });
@@ -47,18 +48,12 @@ async function girisYap() {
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: profil } = await supabase
-        .from('profiles')
-        .select('kullanici_turu')
-        .eq('id', user.id)
-        .single();
-      
-      window.location.href = profil?.kullanici_turu === 'sahis' ? '/sahis-dashboard' : '/dashboard';
+    if (data.user) {
+      await yonlendir(data.user.id);
     } else {
       window.location.href = '/dashboard';
     }
+    
     setYukleniyor(false);
   }
 
