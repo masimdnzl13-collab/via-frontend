@@ -156,10 +156,10 @@ export default function IsbírligiTeklif() {
     setSonuc('');
 
     try {
-      const res = await fetch('/api/isbirligi-teklif', {
+      const res = await fetch('/api/sahis-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profil, ...form }),
+        body: JSON.stringify({ tip: 'isbirligi-teklif', profil, ...form }),
       });
       const data = await res.json();
       setSonuc(data.cevap);

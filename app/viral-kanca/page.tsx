@@ -223,11 +223,11 @@ export default function ViralKanca() {
     setSonuc('');
 
     try {
-      const res = await fetch('/api/viral-kanca', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profil, ...form }),
-      });
+      const res = await fetch('/api/sahis-ai', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ tip: 'viral-kanca', profil, ...form }),
+});
       const data = await res.json();
       setSonuc(data.cevap);
     } catch {

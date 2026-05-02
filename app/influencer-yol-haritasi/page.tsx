@@ -209,10 +209,10 @@ export default function InfluencerYolHaritasi() {
     setSonuc('');
 
     try {
-      const res = await fetch('/api/influencer-yol-haritasi', {
+      const res = await fetch('/api/sahis-ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profil, ...form }),
+        body: JSON.stringify({ tip: 'influencer-yol-haritasi', profil, ...form }),
       });
       const data = await res.json();
       setSonuc(data.cevap);
