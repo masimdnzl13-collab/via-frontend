@@ -127,7 +127,7 @@ async function dogrulamaYap() {
           tiktok_kullanici: form.tiktok_kullanici.replace('@', '').trim(),
         });
       }
-      window.location.href = '/dashboard';
+    window.location.href = form.kullanici_turu === 'sahis' ? '/sahis-dashboard' : '/dashboard';
     } catch { alert('Bir hata oluştu.'); }
     setYukleniyor(false);
   }

@@ -34,11 +34,9 @@ export default function Giris() {
     }
   }
 
-  async function girisYap() {
-    if (!form.email || !form.sifre) return;
+async function girisYap() {
     setYukleniyor(true);
-
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.sifre,
     });
@@ -49,10 +47,18 @@ export default function Giris() {
       return;
     }
 
-    if (data?.user) {
-      await yonlendir(data.user.id);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profil } = await supabase
+        .from('profiles')
+        .select('kullanici_turu')
+        .eq('id', user.id)
+        .single();
+      
+      window.location.href = profil?.kullanici_turu === 'sahis' ? '/sahis-dashboard' : '/dashboard';
+    } else {
+      window.location.href = '/dashboard';
     }
-    
     setYukleniyor(false);
   }
 
