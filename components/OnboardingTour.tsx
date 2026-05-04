@@ -1,6 +1,5 @@
 'use client';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 const ISLETME_ADIMLARI = [
   {
     hedef: 'icerik-uret',           // dashboard'daki elementin id'si
@@ -62,9 +61,10 @@ export default function OnboardingTour({ tip, onKapat }: Props) {
   // Hedef elementi bul ve konumuna göre tooltip yerleştir
   const [konum, setKonum] = useState({ top: 0, left: 0, ok: 'top' as 'top' | 'bottom' });
 
-  useState(() => {
-    setTimeout(() => konumHesapla(suanki.hedef), 100);
-  });
+useEffect(() => {
+  const timer = setTimeout(() => konumHesapla(suanki.hedef), 100);
+  return () => clearTimeout(timer);
+}, [suanki.hedef]);
 
   function konumHesapla(hedefId: string) {
     const el = document.getElementById(hedefId);
