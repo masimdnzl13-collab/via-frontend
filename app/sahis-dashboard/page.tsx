@@ -1,7 +1,6 @@
 'use client';
-
-import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { useEffect, useState } from 'react';
+import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { supabase } from '../../lib/supabase';
 import dynamic from 'next/dynamic';
 
@@ -48,11 +47,6 @@ const ozellikler = [
 const { goster: turGoster, kapat: turKapat } = useOnboardingTour('sahis_onboarding');
 
 export default function SahisDashboard() {
-  return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-     
-    </div>
-  );
   const [profil, setProfil] = useState<any>(null);
   const [haftalikModal, setHaftalikModal] = useState(false);
   const [istatistikModal, setIstatistikModal] = useState(false);
