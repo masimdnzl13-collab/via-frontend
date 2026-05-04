@@ -1,9 +1,13 @@
 'use client';
-import OnboardingTour from '@/components/OnboardingTour';
+
 import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import dynamic from 'next/dynamic';
 
+const OnboardingTour = dynamic(() => import('@/components/OnboardingTour'), {
+  ssr: false,
+});
 
 const haftalikPlan = [
   { gun: 'Pazartesi', icerik: 'Before/after dönüşüm videosu', durum: 'tamamlandi', detay: 'Müşterinin önceki ve sonraki halini gösteren 30 saniyelik bir reels çek. İlk 2 saniyede final sonucunu göster, sonra başa dön. Trend müzik ekle.' },

@@ -1,8 +1,13 @@
 'use client';
-import OnboardingTour from '@/components/OnboardingTour';
+
 import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import dynamic from 'next/dynamic';
+
+const OnboardingTour = dynamic(() => import('@/components/OnboardingTour'), {
+  ssr: false,
+});
 
 const haftalikPlan = [
   { gun: 'Pazartesi', icerik: 'Günlük rutinin arkası', durum: 'tamamlandi', detay: 'Sabah rutinini, hazırlanma sürecini veya gününün başlangıcını göster. "Vlog" tarzı, samimi ve doğal çek. İlk 2 saniyede en ilginç anı göster.' },
@@ -106,6 +111,7 @@ export default function SahisDashboard() {
   return (
     <main className="min-h-screen bg-black text-white">
 {turGoster && <OnboardingTour tip="sahis" onKapat={turKapat} />}
+
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-10">
         <div className="flex items-center gap-3">
