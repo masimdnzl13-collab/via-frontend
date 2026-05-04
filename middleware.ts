@@ -1,8 +1,7 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Giriş gerektiren route'lar
 const KORUNALI_ROTALAR = [
   '/dashboard',
   '/sahis-dashboard',
@@ -31,18 +30,32 @@ const KORUNALI_ROTALAR = [
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
 
   const { data: { session } } = await supabase.auth.getSession();
 
   const { pathname } = req.nextUrl;
-
-  // Korumalı route'a girmeye çalışıyor ama oturum yok
   const korunuyor = KORUNALI_ROTALAR.some(rota => pathname.startsWith(rota));
 
   if (korunuyor && !session) {
     const girisUrl = new URL('/giris', req.url);
-    girisUrl.searchParams.set('redirect', pathname); // nereden geldiğini sakla
+    girisUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(girisUrl);
   }
 
@@ -50,7 +63,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/|giris|kayit|$).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/|giris|kayit|$).*)'],
 };
