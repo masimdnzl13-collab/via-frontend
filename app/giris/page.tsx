@@ -20,7 +20,7 @@ export default function Giris() {
   }, []);
 
   // YARDIMCI FONKSİYON: Kullanıcıyı profiles tablosundaki rolüne göre yönlendirir
-  async function yonlendir(userId) {
+  async function yonlendir(userId: string) {
     try {
       const { data: profil, error } = await supabase
         .from('profiles')
@@ -28,6 +28,7 @@ export default function Giris() {
         .eq('id', userId)
         .single();
 
+      
       if (error) {
         console.error("Profil çekilemedi:", error);
         // Profil bulunamazsa güvenli bir varsayılan sayfaya at
