@@ -44,9 +44,8 @@ const ozellikler = [
   { icon: '🔍', baslik: 'Algoritma & SEO', aciklama: 'Algoritmayı yeni, keşfette öne çık.', href: '/algoritma-seo', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Analiz et →' },
 ];
 
-const { goster: turGoster, kapat: turKapat } = useOnboardingTour('sahis_onboarding');
-
 export default function SahisDashboard() {
+  const { goster: turGoster, kapat: turKapat } = useOnboardingTour('sahis_onboarding');
   const [profil, setProfil] = useState<any>(null);
   const [haftalikModal, setHaftalikModal] = useState(false);
   const [istatistikModal, setIstatistikModal] = useState(false);
@@ -104,7 +103,7 @@ export default function SahisDashboard() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-{turGoster && <OnboardingTour tip="sahis" onKapat={turKapat} />}
+      {turGoster && <OnboardingTour tip="sahis" onKapat={turKapat} />}
 
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-10">
@@ -175,6 +174,7 @@ export default function SahisDashboard() {
             <p className="text-base font-bold">{profil.hedef}</p>
           </div>
           <div
+            id="haftalik-plan"
             onClick={() => setHaftalikModal(true)}
             className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-pink-500 transition group"
           >
@@ -183,6 +183,7 @@ export default function SahisDashboard() {
             <p className="text-green-400 text-xs mt-1 group-hover:text-pink-400 transition">↑ Planlandı — tıkla</p>
           </div>
           <div
+            id="haftalik-buyume"
             onClick={() => setHaftalikBuyumeModal(true)}
             className="bg-gradient-to-br from-pink-600 to-violet-600 rounded-2xl p-5 cursor-pointer hover:opacity-90 transition"
           >
@@ -194,8 +195,6 @@ export default function SahisDashboard() {
 
         {/* ORTA 3 KOLON */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-          {/* Sol — Bugün ne yapmalısın */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <h2 className="text-sm font-semibold mb-4">📋 Bugün ne yapmalısın?</h2>
             <div className="space-y-3">
@@ -219,9 +218,10 @@ export default function SahisDashboard() {
             </div>
           </div>
 
-          {/* Orta — İçerik üret */}
-          <div id="icerik-uret"
-          className="bg-gradient-to-br from-pink-600/10 to-violet-600/10 border border-pink-500/30 rounded-2xl p-6 flex flex-col">
+          <div
+            id="icerik-uret"
+            className="bg-gradient-to-br from-pink-600/10 to-violet-600/10 border border-pink-500/30 rounded-2xl p-6 flex flex-col"
+          >
             <h2 className="text-sm font-semibold mb-2">✨ İçerik üret</h2>
             <p className="text-zinc-400 text-xs mb-4 flex-1">AI ile konuş, nişine özel viral içerik fikirleri al.</p>
             <div className="space-y-2">
@@ -239,7 +239,6 @@ export default function SahisDashboard() {
             </div>
           </div>
 
-          {/* Sağ — Büyüme istatistikleri */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
             <h2 className="text-sm font-semibold mb-3">📈 Bu ay</h2>
             <div className="grid grid-cols-2 gap-3">
@@ -315,8 +314,7 @@ export default function SahisDashboard() {
         </div>
 
         {/* TÜM ARAÇLAR */}
-        <div id="tum-araclar"
-        className="mb-2">
+        <div id="tum-araclar" className="mb-2">
           <h2 className="text-sm font-semibold text-zinc-400 mb-4">🛠️ Tüm araçlar</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {ozellikler.map((o, i) => (
@@ -332,15 +330,11 @@ export default function SahisDashboard() {
             ))}
           </div>
         </div>
-
       </div>
 
       {/* HAFTALIK PLAN MODAL */}
       {haftalikModal && (
-        <div 
-        id="haftalik-plan"
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => { setHaftalikModal(false); setSeciliIcerik(null); }}>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
@@ -387,8 +381,7 @@ export default function SahisDashboard() {
 
       {/* HAFTALIK BÜYÜME MODAL */}
       {haftalikBuyumeModal && (
-        <div id="haftalik-buyume"
-        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
@@ -400,7 +393,6 @@ export default function SahisDashboard() {
               <button onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}
                 className="text-zinc-500 hover:text-white text-xl transition">×</button>
             </div>
-
             {!haftalikSonuc ? (
               <div className="p-5 space-y-5">
                 {profil?.instagram_kullanici && (
@@ -418,9 +410,7 @@ export default function SahisDashboard() {
                       ].map(({ key, label, placeholder }) => (
                         <div key={key}>
                           <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
-                          <input
-                            type="number"
-                            placeholder={placeholder}
+                          <input type="number" placeholder={placeholder}
                             value={(haftalikForm as any)[key]}
                             onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
                             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-pink-500 transition"
@@ -430,7 +420,6 @@ export default function SahisDashboard() {
                     </div>
                   </div>
                 )}
-
                 {profil?.tiktok_kullanici && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
@@ -446,9 +435,7 @@ export default function SahisDashboard() {
                       ].map(({ key, label, placeholder }) => (
                         <div key={key}>
                           <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
-                          <input
-                            type="number"
-                            placeholder={placeholder}
+                          <input type="number" placeholder={placeholder}
                             value={(haftalikForm as any)[key]}
                             onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
                             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition"
@@ -458,19 +445,15 @@ export default function SahisDashboard() {
                     </div>
                   </div>
                 )}
-
                 {!profil?.instagram_kullanici && !profil?.tiktok_kullanici && (
                   <div className="text-center py-6">
                     <p className="text-zinc-400 text-sm mb-3">Henüz sosyal medya hesabı eklenmemiş.</p>
                     <a href="/ayarlar" className="text-pink-400 text-sm hover:text-pink-300">Hesap ekle →</a>
                   </div>
                 )}
-
-                <button
-                  onClick={haftalikAnalizOlustur}
+                <button onClick={haftalikAnalizOlustur}
                   disabled={haftalikYukleniyor || (!profil?.instagram_kullanici && !profil?.tiktok_kullanici)}
-                  className="w-full bg-gradient-to-r from-pink-600 to-violet-600 hover:opacity-90 disabled:from-zinc-700 disabled:to-zinc-700 py-3 rounded-xl text-sm font-semibold transition"
-                >
+                  className="w-full bg-gradient-to-r from-pink-600 to-violet-600 hover:opacity-90 disabled:from-zinc-700 disabled:to-zinc-700 py-3 rounded-xl text-sm font-semibold transition">
                   {haftalikYukleniyor ? 'Analiz ediliyor...' : '📊 Haftalık Analizi Oluştur'}
                 </button>
               </div>
@@ -577,7 +560,6 @@ export default function SahisDashboard() {
           </div>
         </div>
       )}
-
     </main>
   );
 }
