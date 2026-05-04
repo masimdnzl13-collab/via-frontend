@@ -1,10 +1,10 @@
 'use client';
-
+import OnboardingTour from '@/components/OnboardingTour';
+import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabase';
 
-// Statik Veriler
+
 const haftalikPlan = [
   { gun: 'Pazartesi', icerik: 'Before/after dönüşüm videosu', durum: 'tamamlandi', detay: 'Müşterinin önceki ve sonraki halini gösteren 30 saniyelik bir reels çek. İlk 2 saniyede final sonucunu göster, sonra başa dön. Trend müzik ekle.' },
   { gun: 'Salı', icerik: 'Story anketi — en sevilen hizmet', durum: 'bekliyor', detay: 'Instagram story\'de anket paylaş: "Hangi hizmeti daha çok seviyorsunuz?" Müşterilerinizin tercihlerini öğrenin ve etkileşim artırın.' },
@@ -42,64 +42,35 @@ const ozellikler = [
 ];
 
 export default function Dashboard() {
-  const router = useRouter();
   const [profil, setProfil] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  
-  // Modal State'leri
   const [haftalikModal, setHaftalikModal] = useState(false);
   const [istatistikModal, setIstatistikModal] = useState(false);
   const [seciliIcerik, setSeciliIcerik] = useState<any>(null);
   const [menuAcik, setMenuAcik] = useState(false);
   const [haftalikBuyumeModal, setHaftalikBuyumeModal] = useState(false);
-
-  // Form State'leri
   const [haftalikForm, setHaftalikForm] = useState({
     instagram_takipci: '', instagram_izlenme: '', instagram_begeni: '', instagram_paylasim: '',
     tiktok_takipci: '', tiktok_izlenme: '', tiktok_begeni: '', tiktok_paylasim: '',
   });
   const [haftalikSonuc, setHaftalikSonuc] = useState('');
   const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
+  const { goster: turGoster, kapat: turKapat } = useOnboardingTour('isletme_onboarding');
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        router.push('/giris');
-        return;
-      }
-
-      // Profil verilerini getir
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (data) {
-        setProfil(data);
-      }
-      setLoading(false);
-    };
-
-    checkUser();
-
-    // Oturum değişikliğini dinle
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) router.push('/giris');
-    });
-
-    return () => subscription.unsubscribe();
-  }, [router]);
+    async function profilGetir() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = '/giris'; return; }
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      setProfil(data);
+    }
+    profilGetir();
+  }, []);
 
   async function haftalikAnalizOlustur() {
     setHaftalikYukleniyor(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const buHafta = new Date().toISOString().split('T')[0];
-
-      // Veritabanına kaydet
       await supabase.from('haftalik_veriler').upsert({
         user_id: user?.id,
         hafta_baslangic: buHafta,
@@ -107,45 +78,38 @@ export default function Dashboard() {
           Object.entries(haftalikForm).map(([k, v]) => [k, parseInt(v as string) || 0])
         ),
       });
-
-      // AI Analiz API'sine gönder
       const res = await fetch('/api/haftalik-analiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ profil, veriler: haftalikForm }),
       });
-      
       const data = await res.json();
       setHaftalikSonuc(data.analiz);
-    } catch (err) {
-      alert('Analiz oluşturulurken bir hata oluştu.');
+    } catch {
+      alert('Hata oluştu.');
     }
     setHaftalikYukleniyor(false);
   }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-  };
-
-  if (loading || !profil) {
+  if (!profil) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-zinc-500 animate-pulse">Yükleniyor...</div>
+        <div className="text-zinc-500">Yükleniyor...</div>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-black text-white">
+{turGoster && <OnboardingTour tip="isletme" onKapat={turKapat} />}
+
       {/* NAVBAR */}
-      <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-40">
+      <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-10">
         <div className="flex items-center gap-3">
           <div className="text-xl font-bold">via<span className="text-violet-500">.ai</span></div>
           <span className="text-zinc-600">·</span>
           <span className="text-zinc-300 text-sm font-medium">{profil.isletme_adi}</span>
         </div>
-        
         <div className="relative">
           <button
             onClick={() => setMenuAcik(!menuAcik)}
@@ -155,7 +119,6 @@ export default function Dashboard() {
             <span className="w-5 h-0.5 bg-white rounded-full" />
             <span className="w-5 h-0.5 bg-white rounded-full" />
           </button>
-
           {menuAcik && (
             <div className="absolute right-0 top-12 w-56 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
               <div className="p-4 border-b border-zinc-800">
@@ -168,6 +131,7 @@ export default function Dashboard() {
                   { icon: '💳', ad: 'Abonelik', href: '/abonelik' },
                   { icon: '⚙️', ad: 'Ayarlar', href: '/ayarlar' },
                   { icon: '📊', ad: 'Aylık Rapor', href: '/aylik-rapor' },
+                  { icon: '📱', ad: 'Sosyal Medya', href: '/ayarlar' },
                   { icon: '❓', ad: 'Yardım', href: '/yardim' },
                 ].map((item) => (
                   <a key={item.ad} href={item.href}
@@ -178,7 +142,7 @@ export default function Dashboard() {
                 ))}
                 <div className="border-t border-zinc-800 mt-2 pt-2">
                   <button
-                    onClick={handleLogout}
+                    onClick={async () => { await supabase.auth.signOut(); window.location.href = '/'; }}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-500/10 transition text-sm text-red-400 w-full text-left"
                   >
                     <span>🚪</span>
@@ -191,8 +155,10 @@ export default function Dashboard() {
         </div>
       </nav>
 
+      {/* ANA İÇERİK */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* ÜST ÖZET KARTLARI */}
+
+        {/* ÜST 4 KART */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
             <p className="text-zinc-500 text-xs mb-1">Sektör</p>
@@ -201,36 +167,37 @@ export default function Dashboard() {
           </div>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
             <p className="text-zinc-500 text-xs mb-1">Hedefin</p>
-            <p className="text-base font-bold line-clamp-2">{profil.hedef}</p>
+            <p className="text-base font-bold">{profil.hedef}</p>
           </div>
           <div
+          id="haftalik-plan"
             onClick={() => setHaftalikModal(true)}
             className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-violet-500 transition group"
           >
-            <p className="text-zinc-500 text-xs mb-1">Haftalık Plan</p>
-            <p className="text-3xl font-bold">7/7</p>
-            <p className="text-green-400 text-xs mt-1 group-hover:text-violet-400">Görüntüle →</p>
+            <p className="text-zinc-500 text-xs mb-1">Bu hafta içerik</p>
+            <p className="text-3xl font-bold">5</p>
+            <p className="text-green-400 text-xs mt-1 group-hover:text-violet-400 transition">↑ Planlandı — tıkla</p>
           </div>
           <div
+          id="haftalik-buyume" 
             onClick={() => setHaftalikBuyumeModal(true)}
             className="bg-violet-600 rounded-2xl p-5 cursor-pointer hover:bg-violet-700 transition"
           >
-            <p className="text-white/70 text-xs mb-1">Haftalık Analiz</p>
+            <p className="text-white/70 text-xs mb-1">Haftalık Büyüme</p>
             <p className="text-3xl font-bold">+18%</p>
-            <p className="text-white/60 text-xs mt-1">Veri gir & Analiz et</p>
+            <p className="text-white/60 text-xs mt-1">Bu hafta · tıkla</p>
           </div>
         </div>
 
-        {/* ORTA PANEL */}
+        {/* ORTA 3 KOLON */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* YAPILACAKLAR */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <h2 className="text-sm font-semibold mb-4">📋 Bugünün Görevleri</h2>
+            <h2 className="text-sm font-semibold mb-4">📋 Bugün ne yapmalısın?</h2>
             <div className="space-y-3">
               {[
                 { icon: '🎬', gorev: 'Before/after videosu çek', sure: '~10 dk', durum: 'bekliyor' },
-                { icon: '✍️', gorev: 'Caption hazırla', sure: 'Hemen', durum: 'hazir' },
-                { icon: '📊', gorev: 'Performans kontrolü', sure: '~2 dk', durum: 'bekliyor' },
+                { icon: '✍️', gorev: 'Caption hazır — paylaşıma hazır', sure: 'Hemen', durum: 'hazir' },
+                { icon: '📊', gorev: 'Dünkü videonun performansını gör', sure: '~2 dk', durum: 'bekliyor' },
                 { icon: '📱', gorev: 'Story anketi paylaş', sure: '~5 dk', durum: 'bekliyor' },
               ].map((g, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 bg-zinc-800 rounded-xl">
@@ -239,7 +206,7 @@ export default function Dashboard() {
                     <p className="text-xs font-medium truncate">{g.gorev}</p>
                     <p className="text-xs text-zinc-500">{g.sure}</p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${g.durum === 'hazir' ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700 text-zinc-400'}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${g.durum === 'hazir' ? 'bg-green-500/20 text-green-400' : 'bg-zinc-700 text-zinc-400'}`}>
                     {g.durum === 'hazir' ? '✓' : '○'}
                   </span>
                 </div>
@@ -247,13 +214,14 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* AI İÇERİK ÜRETİCİ */}
-          <div className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col">
-            <h2 className="text-sm font-semibold mb-2">✨ AI İçerik Üret</h2>
-            <p className="text-zinc-400 text-xs mb-4 flex-1">Sektörüne özel viral fikirler ve hazır taslaklar oluştur.</p>
+          <div 
+          id="icerik-uret"
+          className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col">
+            <h2 className="text-sm font-semibold mb-2">✨ İçerik üret</h2>
+            <p className="text-zinc-400 text-xs mb-4 flex-1">AI ile sohbet et, sektörüne özel viral içerik fikirleri al.</p>
             <div className="space-y-2">
               <a href="/icerik" className="block w-full bg-violet-600 hover:bg-violet-700 py-2.5 rounded-xl font-semibold transition text-xs text-center">
-                AI ile Sohbet Başlat →
+                AI ile Konuş →
               </a>
               <div className="grid grid-cols-2 gap-2">
                 {['Reels fikri', 'Kampanya', 'Caption', 'Hashtag'].map(s => (
@@ -266,9 +234,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* HIZLI İSTATİSTİK */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-            <h2 className="text-sm font-semibold mb-3">📈 Bu Ayın Özeti</h2>
+            <h2 className="text-sm font-semibold mb-3">📈 Bu ay</h2>
             <div className="grid grid-cols-2 gap-3">
               {istatistikler.slice(0, 4).map((ist, i) => (
                 <div key={i} className="bg-zinc-800 rounded-xl p-3">
@@ -282,55 +249,71 @@ export default function Dashboard() {
               onClick={() => setIstatistikModal(true)}
               className="w-full mt-3 text-xs text-violet-400 hover:text-violet-300 transition py-2 border border-zinc-800 rounded-xl hover:border-violet-500"
             >
-              Detaylı Rapor →
+              Tam raporu gör →
             </button>
           </div>
         </div>
 
-        {/* AI KOÇ VE REKLAM */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-             <h2 className="text-sm font-semibold mb-3">🤖 AI Koç Mesajı</h2>
-             <div className="space-y-2">
-               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-2">
-                 <p className="text-xs text-green-400">💡 Dönüşüm videoların çok iyi çalışıyor.</p>
-               </div>
-               <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2">
-                 <p className="text-xs text-amber-400">⚠️ Kampanya postlarında CTA'yı güçlendir.</p>
-               </div>
-             </div>
-           </div>
-           
-           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-             <h2 className="text-sm font-semibold mb-3">📊 Son Performans</h2>
-             <div className="space-y-3">
-               {[
-                 { icerik: 'Dönüşüm videosu', izlenme: '4.2K', artis: '+38%' },
-                 { icerik: 'Müşteri reaksiyonu', izlenme: '2.8K', artis: '+12%' },
-               ].map((p, i) => (
-                 <div key={i} className="flex items-center justify-between">
-                   <p className="text-xs font-medium">{p.icerik}</p>
-                   <span className="text-xs font-semibold text-green-400">{p.artis}</span>
-                 </div>
-               ))}
-             </div>
-           </div>
+        {/* 2. SIRA */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+            <h2 className="text-sm font-semibold mb-3">📊 Son performans</h2>
+            <div className="space-y-3">
+              {[
+                { icerik: 'Dönüşüm videosu', izlenme: '4.2K', artis: '+38%' },
+                { icerik: 'Müşteri reaksiyonu', izlenme: '2.8K', artis: '+12%' },
+                { icerik: 'Kampanya postu', izlenme: '890', artis: '-5%' },
+              ].map((p, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium">{p.icerik}</p>
+                    <p className="text-xs text-zinc-500">{p.izlenme} izlenme</p>
+                  </div>
+                  <span className={`text-xs font-semibold ${p.artis.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                    {p.artis}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-             <h2 className="text-sm font-semibold mb-3">📢 Reklam Önerisi</h2>
-             <div className="bg-zinc-800 rounded-lg p-3 mb-3">
-               <p className="text-xs text-zinc-400 mb-1">Önerilen Günlük Bütçe</p>
-               <p className="text-base font-bold">100 TL</p>
-             </div>
-             <a href="/icerik" className="block text-center text-xs bg-zinc-700 hover:bg-zinc-600 py-2 rounded-lg transition">
-               Plan Oluştur
-             </a>
-           </div>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+            <h2 className="text-sm font-semibold mb-3">🤖 AI Koç</h2>
+            <div className="space-y-2">
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-2">
+                <p className="text-xs text-green-400">💡 Dönüşüm videoların çok iyi çalışıyor.</p>
+              </div>
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2">
+                <p className="text-xs text-amber-400">⚠️ Kampanya postların zayıf — CTA güçlendir.</p>
+              </div>
+              <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-2">
+                <p className="text-xs text-violet-400">🎯 Bu hafta 3 reels hedefle.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+            <h2 className="text-sm font-semibold mb-3">📢 Reklam önerisi</h2>
+            <div className="space-y-2">
+              <div className="bg-zinc-800 rounded-lg p-3">
+                <p className="text-xs text-zinc-400 mb-1">Önerilen bütçe</p>
+                <p className="text-base font-bold">100 TL/gün</p>
+                <p className="text-xs text-zinc-500">5 gün · 18-35 yaş</p>
+              </div>
+              <a href="/icerik"
+                className="block text-center text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-2 rounded-lg transition text-zinc-400 hover:text-white">
+                Reklam planı oluştur →
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* TÜM ARAÇLAR */}
-        <div className="mb-12">
-          <h2 className="text-sm font-semibold text-zinc-400 mb-4 uppercase tracking-wider">🛠️ Araçlar ve Analizler</h2>
+        <div 
+        id="tum-araclar"
+        className="mb-2"
+        >
+          <h2 className="text-sm font-semibold text-zinc-400 mb-4">🛠️ Tüm araçlar</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {ozellikler.map((o, i) => (
               <a key={i} href={o.href}
@@ -345,9 +328,10 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
+
       </div>
 
-      {/* MODAL: HAFTALIK PLAN */}
+      {/* HAFTALIK PLAN MODAL */}
       {haftalikModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => { setHaftalikModal(false); setSeciliIcerik(null); }}>
@@ -356,7 +340,7 @@ export default function Dashboard() {
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-zinc-900">
               <h2 className="text-lg font-bold">📅 Haftalık İçerik Planı</h2>
               <button onClick={() => { setHaftalikModal(false); setSeciliIcerik(null); }}
-                className="text-zinc-500 hover:text-white text-2xl">×</button>
+                className="text-zinc-500 hover:text-white text-xl transition">×</button>
             </div>
             {!seciliIcerik ? (
               <div className="p-4 space-y-2">
@@ -367,25 +351,26 @@ export default function Dashboard() {
                     }`}>
                     <span className="text-xs text-zinc-500 w-20 flex-shrink-0">{g.gun}</span>
                     <span className="text-sm flex-1">{g.icerik}</span>
-                    <span className={`text-xs ${g.durum === 'tamamlandi' ? 'text-green-400' : 'text-zinc-600'}`}>
-                      {g.durum === 'tamamlandi' ? '✓' : '→'}
+                    <span className={`text-xs flex-shrink-0 ${g.durum === 'tamamlandi' ? 'text-green-400' : 'text-zinc-600'}`}>
+                      {g.durum === 'tamamlandi' ? '✓ Tamamlandı' : 'Nasıl yapılır →'}
                     </span>
                   </button>
                 ))}
               </div>
             ) : (
               <div className="p-6">
-                <button onClick={() => setSeciliIcerik(null)} className="text-zinc-500 hover:text-white text-sm mb-4">← Listeye Dön</button>
+                <button onClick={() => setSeciliIcerik(null)}
+                  className="text-zinc-500 hover:text-white text-sm mb-4 transition">← Geri</button>
                 <div className="bg-violet-600/10 border border-violet-500/30 rounded-xl p-4 mb-4">
                   <p className="text-xs text-violet-400 mb-1">{seciliIcerik.gun}</p>
                   <p className="text-base font-bold">{seciliIcerik.icerik}</p>
                 </div>
                 <div className="bg-zinc-800 rounded-xl p-4">
-                  <p className="text-xs text-zinc-400 mb-2 font-semibold">📋 Nasıl Yapılır?</p>
+                  <p className="text-xs text-zinc-400 mb-2 font-semibold">📋 Nasıl yapılır?</p>
                   <p className="text-sm text-zinc-300 leading-relaxed">{seciliIcerik.detay}</p>
                 </div>
-                <a href="/icerik" className="mt-4 block w-full bg-violet-600 text-center py-3 rounded-xl font-semibold text-sm">
-                  AI ile Detaylandır →
+                <a href="/icerik" className="mt-4 block w-full bg-violet-600 hover:bg-violet-700 py-3 rounded-xl font-semibold transition text-sm text-center">
+                  AI ile daha fazla detay al →
                 </a>
               </div>
             )}
@@ -393,7 +378,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* MODAL: HAFTALIK BÜYÜME ANALİZİ */}
+      {/* HAFTALIK BÜYÜME MODAL */}
       {haftalikBuyumeModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}>
@@ -401,52 +386,125 @@ export default function Dashboard() {
             onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-zinc-900">
               <div>
-                <h2 className="text-lg font-bold">📈 Haftalık Büyüme Analizi</h2>
-                <p className="text-zinc-500 text-xs mt-0.5">Rakamları gir, AI stratejini çizsin.</p>
+                <h2 className="text-lg font-bold">📈 Haftalık Büyüme</h2>
+                <p className="text-zinc-500 text-xs mt-0.5">Bu haftanın verilerini gir, AI analiz etsin</p>
               </div>
               <button onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}
-                className="text-zinc-500 hover:text-white text-2xl">×</button>
+                className="text-zinc-500 hover:text-white text-xl transition">×</button>
             </div>
-            
+
             {!haftalikSonuc ? (
-              <div className="p-5 space-y-6">
-                {/* Instagram Form */}
-                <div className="space-y-3">
-                  <p className="text-sm font-semibold flex items-center gap-2">📷 Instagram (@{profil.instagram_kullanici || 'Hesap Yok'})</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { key: 'instagram_takipci', label: 'Takipçi Artışı' },
-                      { key: 'instagram_izlenme', label: 'Toplam İzlenme' },
-                    ].map(f => (
-                      <div key={f.key}>
-                        <label className="text-[10px] text-zinc-500 uppercase mb-1 block">{f.label}</label>
-                        <input
-                          type="number"
-                          value={(haftalikForm as any)[f.key]}
-                          onChange={e => setHaftalikForm(p => ({ ...p, [f.key]: e.target.value }))}
-                          className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm focus:border-violet-500 outline-none"
-                          placeholder="0"
-                        />
-                      </div>
-                    ))}
+              <div className="p-5 space-y-5">
+                {profil?.instagram_kullanici && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-pink-400">📷</span>
+                      <p className="text-sm font-semibold">Instagram — @{profil.instagram_kullanici}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { key: 'instagram_takipci', label: 'Takipçi Artışı', placeholder: '150' },
+                        { key: 'instagram_izlenme', label: 'Toplam İzlenme', placeholder: '25000' },
+                        { key: 'instagram_begeni', label: 'Toplam Beğeni', placeholder: '3200' },
+                        { key: 'instagram_paylasim', label: 'Paylaşım Sayısı', placeholder: '5' },
+                      ].map(({ key, label, placeholder }) => (
+                        <div key={key}>
+                          <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
+                          <input
+                            type="number"
+                            placeholder={placeholder}
+                            value={(haftalikForm as any)[key]}
+                            onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-pink-500 transition"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {profil?.tiktok_kullanici && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span>🎵</span>
+                      <p className="text-sm font-semibold">TikTok — @{profil.tiktok_kullanici}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { key: 'tiktok_takipci', label: 'Takipçi Artışı', placeholder: '200' },
+                        { key: 'tiktok_izlenme', label: 'Toplam İzlenme', placeholder: '50000' },
+                        { key: 'tiktok_begeni', label: 'Toplam Beğeni', placeholder: '8000' },
+                        { key: 'tiktok_paylasim', label: 'Paylaşım Sayısı', placeholder: '7' },
+                      ].map(({ key, label, placeholder }) => (
+                        <div key={key}>
+                          <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
+                          <input
+                            type="number"
+                            placeholder={placeholder}
+                            value={(haftalikForm as any)[key]}
+                            onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
+                            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {!profil?.instagram_kullanici && !profil?.tiktok_kullanici && (
+                  <div className="text-center py-6">
+                    <p className="text-zinc-400 text-sm mb-3">Henüz sosyal medya hesabı eklenmemiş.</p>
+                    <a href="/ayarlar" className="text-violet-400 text-sm hover:text-violet-300">Hesap ekle →</a>
+                  </div>
+                )}
 
                 <button
                   onClick={haftalikAnalizOlustur}
-                  disabled={haftalikYukleniyor}
-                  className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-800 py-3 rounded-xl font-bold transition"
+                  disabled={haftalikYukleniyor || (!profil?.instagram_kullanici && !profil?.tiktok_kullanici)}
+                  className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 py-3 rounded-xl text-sm font-semibold transition"
                 >
-                  {haftalikYukleniyor ? 'Analiz Ediliyor...' : '📊 Analizi Oluştur'}
+                  {haftalikYukleniyor ? 'Analiz ediliyor...' : '📊 Haftalık Analizi Oluştur'}
                 </button>
               </div>
             ) : (
               <div className="p-5">
-                <div className="bg-zinc-800/50 border border-zinc-700 rounded-2xl p-4 whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
-                  {haftalikSonuc}
+                <div className="space-y-2">
+                  {haftalikSonuc.split('\n').filter(s => s.trim()).map((satir, i) => {
+                    if (satir.startsWith('[BASLIK]')) return (
+                      <div key={i} className="bg-violet-600/20 border border-violet-500/40 rounded-xl px-4 py-2 mt-3">
+                        <p className="text-violet-300 font-semibold text-sm">{satir.replace('[BASLIK]', '').trim()}</p>
+                      </div>
+                    );
+                    if (satir.startsWith('[METRIK]')) {
+                      const p = satir.replace('[METRIK]', '').trim().split('|');
+                      const artis = p[2]?.trim() || '';
+                      const renk = artis.startsWith('+') ? 'text-green-400' : artis.startsWith('-') ? 'text-red-400' : 'text-zinc-400';
+                      return (
+                        <div key={i} className="flex items-center justify-between bg-zinc-800 rounded-xl px-3 py-2">
+                          <p className="text-zinc-300 text-sm">{p[0]?.trim()}</p>
+                          <div className="text-right">
+                            <p className="text-white font-bold text-sm">{p[1]?.trim()}</p>
+                            <p className={`text-xs ${renk}`}>{artis}</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    if (satir.startsWith('[ONERI]')) return (
+                      <div key={i} className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-3">
+                        <p className="text-violet-400 text-sm">{satir.replace('[ONERI]', '').trim()}</p>
+                      </div>
+                    );
+                    if (satir.startsWith('[IPUCU]')) return (
+                      <div key={i} className="bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2">
+                        <p className="text-amber-400 text-xs">{satir.replace('[IPUCU]', '').trim()}</p>
+                      </div>
+                    );
+                    return null;
+                  })}
                 </div>
-                <button onClick={() => setHaftalikSonuc('')} className="w-full mt-4 text-zinc-500 text-xs py-2">
-                  ← Verileri Düzenle
+                <button onClick={() => setHaftalikSonuc('')}
+                  className="w-full mt-4 text-zinc-500 hover:text-white text-sm transition py-2">
+                  ← Verileri güncelle
                 </button>
               </div>
             )}
@@ -454,34 +512,75 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* MODAL: AYLIK RAPOR */}
+      {/* İSTATİSTİK MODAL */}
       {istatistikModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setIstatistikModal(false)}>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden"
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
-            <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
-              <h2 className="text-lg font-bold">📊 Aylık Performans</h2>
-              <button onClick={() => setIstatistikModal(false)} className="text-zinc-500 hover:text-white text-2xl">×</button>
+            <div className="p-6 border-b border-zinc-800 flex items-center justify-between sticky top-0 bg-zinc-900">
+              <h2 className="text-lg font-bold">📈 Aylık Büyüme Raporu</h2>
+              <button onClick={() => setIstatistikModal(false)}
+                className="text-zinc-500 hover:text-white text-xl transition">×</button>
             </div>
-            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-              <div className="bg-violet-600/10 border border-violet-500/30 rounded-xl p-4 text-center">
-                <p className="text-xs text-violet-400 mb-1">Genel Büyüme Oranı</p>
-                <p className="text-4xl font-bold text-violet-400">+23%</p>
+            <div className="p-6 space-y-4">
+              <div className="bg-violet-600/10 border border-violet-500/30 rounded-xl p-4">
+                <p className="text-xs text-violet-400 mb-1">Genel Büyüme</p>
+                <p className="text-3xl font-bold text-violet-400">+23%</p>
+                <p className="text-xs text-zinc-500 mt-1">Geçen aya göre</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {istatistikler.map((ist, i) => (
                   <div key={i} className="bg-zinc-800 rounded-xl p-4">
-                    <p className="text-[10px] text-zinc-500 uppercase mb-1">{ist.baslik}</p>
-                    <p className="text-lg font-bold">{ist.deger}</p>
+                    <p className="text-xs text-zinc-500 mb-1">{ist.baslik}</p>
+                    <p className="text-xl font-bold">{ist.deger}</p>
                     <p className={`text-xs ${ist.renk}`}>{ist.artis}</p>
                   </div>
                 ))}
+              </div>
+              <div className="bg-zinc-800 rounded-xl p-4">
+                <p className="text-sm font-semibold mb-3">📊 İçerik Performansı</p>
+                <div className="space-y-3">
+                  {[
+                    { tur: 'Reels / Video', oran: 78, renk: 'bg-violet-500' },
+                    { tur: 'Story', oran: 45, renk: 'bg-blue-500' },
+                    { tur: 'Post', oran: 32, renk: 'bg-green-500' },
+                  ].map((p, i) => (
+                    <div key={i}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-zinc-400">{p.tur}</span>
+                        <span className="text-white">%{p.oran}</span>
+                      </div>
+                      <div className="h-2 bg-zinc-700 rounded-full">
+                        <div className={`h-2 ${p.renk} rounded-full`} style={{ width: `${p.oran}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-zinc-800 rounded-xl p-4">
+                <p className="text-sm font-semibold mb-3">🕐 En İyi Paylaşım Saatleri</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {['18:00', '20:00', '12:00'].map((saat, i) => (
+                    <div key={i} className="text-center bg-zinc-700 rounded-lg p-2">
+                      <p className="text-sm font-bold">{saat}</p>
+                      <p className="text-xs text-zinc-500">{i === 0 ? 'En iyi' : i === 1 ? '2. en iyi' : '3. en iyi'}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                <p className="text-sm font-semibold text-green-400 mb-2">✅ AI Tavsiyesi</p>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  Bu ay reels içeriklerin %38 daha fazla izlenme aldı. Salı ve Perşembe günleri
+                  düşük performans görülüyor. Before/after formatını haftada en az 2 kez kullan.
+                </p>
               </div>
             </div>
           </div>
         </div>
       )}
+
     </main>
   );
 }

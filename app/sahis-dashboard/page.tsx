@@ -1,4 +1,6 @@
 'use client';
+import OnboardingTour from '@/components/OnboardingTour';
+import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
@@ -38,7 +40,14 @@ const ozellikler = [
   { icon: '🔍', baslik: 'Algoritma & SEO', aciklama: 'Algoritmayı yeni, keşfette öne çık.', href: '/algoritma-seo', renk: 'hover:border-violet-500', linkRenk: 'text-violet-400', link: 'Analiz et →' },
 ];
 
+const { goster: turGoster, kapat: turKapat } = useOnboardingTour('sahis_onboarding');
+
 export default function SahisDashboard() {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+     
+    </div>
+  );
   const [profil, setProfil] = useState<any>(null);
   const [haftalikModal, setHaftalikModal] = useState(false);
   const [istatistikModal, setIstatistikModal] = useState(false);
@@ -96,7 +105,7 @@ export default function SahisDashboard() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-
+{turGoster && <OnboardingTour tip="sahis" onKapat={turKapat} />}
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-10">
         <div className="flex items-center gap-3">
@@ -211,7 +220,8 @@ export default function SahisDashboard() {
           </div>
 
           {/* Orta — İçerik üret */}
-          <div className="bg-gradient-to-br from-pink-600/10 to-violet-600/10 border border-pink-500/30 rounded-2xl p-6 flex flex-col">
+          <div id="icerik-uret"
+          className="bg-gradient-to-br from-pink-600/10 to-violet-600/10 border border-pink-500/30 rounded-2xl p-6 flex flex-col">
             <h2 className="text-sm font-semibold mb-2">✨ İçerik üret</h2>
             <p className="text-zinc-400 text-xs mb-4 flex-1">AI ile konuş, nişine özel viral içerik fikirleri al.</p>
             <div className="space-y-2">
@@ -305,7 +315,8 @@ export default function SahisDashboard() {
         </div>
 
         {/* TÜM ARAÇLAR */}
-        <div className="mb-2">
+        <div id="tum-araclar"
+        className="mb-2">
           <h2 className="text-sm font-semibold text-zinc-400 mb-4">🛠️ Tüm araçlar</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {ozellikler.map((o, i) => (
@@ -326,7 +337,10 @@ export default function SahisDashboard() {
 
       {/* HAFTALIK PLAN MODAL */}
       {haftalikModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        <div 
+        id="haftalik-plan"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    
           onClick={() => { setHaftalikModal(false); setSeciliIcerik(null); }}>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
@@ -373,7 +387,8 @@ export default function SahisDashboard() {
 
       {/* HAFTALIK BÜYÜME MODAL */}
       {haftalikBuyumeModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        <div id="haftalik-buyume"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}>
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>

@@ -41,7 +41,7 @@ Kullanıcı bilgileri:
       max_tokens: 2000,
       system: sistemPrompt,
       messages: [{ role: 'user' as Rol, content: kullaniciMesaji }],
-      tools: [{ type: 'web_search_20250305', name: 'web_search' } as any],
+    
     });
 
     let cevap = '';

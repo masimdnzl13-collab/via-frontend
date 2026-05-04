@@ -67,7 +67,7 @@ KESİNLİKLE YASAK:
       max_tokens: 4000,
       system: sistemPrompt,
       messages: mesajlar,
-      tools: [{ type: 'web_search_20250305' as const, name: 'web_search' }],
+     
     });
 
     mesajlar.push({ role: 'assistant', content: yanit.content });
