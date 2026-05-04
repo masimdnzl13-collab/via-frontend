@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect } from 'react';
+import * as React from 'react';
+const { useState, useEffect } = React;
 const ISLETME_ADIMLARI = [
   {
     hedef: 'icerik-uret',           // dashboard'daki elementin id'si
