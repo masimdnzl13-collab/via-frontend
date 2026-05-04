@@ -19,22 +19,36 @@ export default function Giris() {
     oturumKontrol();
   }, []);
 
-  // Kullanıcıyı türüne göre ilgili dashboard'a gönderen yardımcı fonksiyon
-  async function yonlendir(userId: string) {
-    const { data: profil } = await supabase
-      .from('profiles')
-      .select('kullanici_turu')
-      .eq('id', userId)
-      .single();
+  // YARDIMCI FONKSİYON: Kullanıcıyı profiles tablosundaki rolüne göre yönlendirir
+  async function yonlendir(userId) {
+    try {
+      const { data: profil, error } = await supabase
+        .from('profiles')
+        .select('kullanici_turu')
+        .eq('id', userId)
+        .single();
 
-    if (profil?.kullanici_turu === 'sahis') {
-      router.push('/sahis-dashboard');
-    } else {
+      if (error) {
+        console.error("Profil çekilemedi:", error);
+        // Profil bulunamazsa güvenli bir varsayılan sayfaya at
+        router.push('/dashboard');
+        return;
+      }
+
+      // Rol kontrolü yaparak ilgili sayfaya gönder
+      if (profil?.kullanici_turu === 'sahis') {
+        router.push('/sahis-dashboard');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err) {
+      console.error("Yönlendirme hatası:", err);
       router.push('/dashboard');
     }
   }
 
-async function girisYap() {
+  // E-posta ve Şifre ile giriş
+  async function girisYap() {
     setYukleniyor(true);
     
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -48,15 +62,15 @@ async function girisYap() {
       return;
     }
 
-    if (data.user) {
+    if (data?.user) {
+      // Başarılı girişte rol kontrolüne git
       await yonlendir(data.user.id);
-    } else {
-      window.location.href = '/dashboard';
     }
     
     setYukleniyor(false);
   }
 
+  // OAuth ile giriş
   async function googleIleGiris() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
