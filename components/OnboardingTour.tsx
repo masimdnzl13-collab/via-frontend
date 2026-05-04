@@ -62,9 +62,28 @@ export default function OnboardingTour({ tip, onKapat }: Props) {
   const [konum, setKonum] = useState({ top: 0, left: 0, ok: 'top' as 'top' | 'bottom' });
 
 useEffect(() => {
-  const timer = setTimeout(() => konumHesapla(suanki.hedef), 100);
-  return () => clearTimeout(timer);
+    useEffect(() => {
+  const aktifEl = document.getElementById(suanki.hedef);
+  if (!aktifEl) return;
+
+  document.querySelectorAll('[data-onboarding-highlight]').forEach(el => {
+    (el as HTMLElement).style.position = '';
+    (el as HTMLElement).style.zIndex = '';
+    (el as HTMLElement).style.boxShadow = '';
+    (el as HTMLElement).style.borderRadius = '';
+    el.removeAttribute('data-onboarding-highlight');
+  });
+
+  aktifEl.style.position = 'relative';
+  aktifEl.style.zIndex = '10001';
+  aktifEl.style.boxShadow = `0 0 0 4px ${accentRenk}, 0 0 0 8px ${accentRenk}40`;
+  aktifEl.style.borderRadius = '16px';
+  aktifEl.setAttribute('data-onboarding-highlight', 'true');
+
 }, [suanki.hedef]);
+  const timer = setTimeout(() => konumHesapla(suanki.hedef), 100);
+  return () => clearTimeout(timer);},  
+[suanki.hedef]);
 
   function konumHesapla(hedefId: string) {
     const el = document.getElementById(hedefId);
@@ -87,28 +106,6 @@ useEffect(() => {
     const yeniAdim = adim + 1;
     setAdim(yeniAdim);
     konumHesapla(adimlar[yeniAdim].hedef);
-  }
-
-  // Aktif elementi highlight et
-  const aktifEl = typeof document !== 'undefined'
-    ? document.getElementById(suanki.hedef)
-    : null;
-
-  if (aktifEl) {
-    // Önceki tüm highlight'ları temizle
-    document.querySelectorAll('[data-onboarding-highlight]').forEach(el => {
-      (el as HTMLElement).style.position = '';
-      (el as HTMLElement).style.zIndex = '';
-      (el as HTMLElement).style.boxShadow = '';
-      (el as HTMLElement).style.borderRadius = '';
-      el.removeAttribute('data-onboarding-highlight');
-    });
-    // Yeni elementi highlight et
-    aktifEl.style.position = 'relative';
-    aktifEl.style.zIndex = '10001';
-    aktifEl.style.boxShadow = `0 0 0 4px ${accentRenk}, 0 0 0 8px ${accentRenk}40`;
-    aktifEl.style.borderRadius = '16px';
-    aktifEl.setAttribute('data-onboarding-highlight', 'true');
   }
 
   return (
