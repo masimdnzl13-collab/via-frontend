@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useOnboardingTour } from '@/hooks/useOnboardingTour';
 import { supabase } from '../../lib/supabase';
-import dynamic from 'next/dynamic';
+import { useOnboardingTour } from '@/hooks/useOnboardingTour';
+import dynamicImport from 'next/dynamic';
 
-const OnboardingTour = dynamic(() => import('@/components/OnboardingTour'), {
-  ssr: false,
-});
+const OnboardingTour = dynamicImport(() => import('@/components/OnboardingTour'), { ssr: false });
+
+export const dynamic = 'force-dynamic';
 
 const haftalikPlan = [
   { gun: 'Pazartesi', icerik: 'Günlük rutinin arkası', durum: 'tamamlandi', detay: 'Sabah rutinini, hazırlanma sürecini veya gününün başlangıcını göster. "Vlog" tarzı, samimi ve doğal çek. İlk 2 saniyede en ilginç anı göster.' },
