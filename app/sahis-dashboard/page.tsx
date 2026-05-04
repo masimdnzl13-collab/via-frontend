@@ -64,6 +64,7 @@ export default function SahisDashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = '/giris'; return; }
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      if (!data) { window.location.href = '/giris'; return; }
       if (data?.kullanici_turu !== 'sahis') { window.location.href = '/dashboard'; return; }
       setProfil(data);
     }
