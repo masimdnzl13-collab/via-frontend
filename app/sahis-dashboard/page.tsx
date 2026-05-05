@@ -134,6 +134,7 @@ export default function SahisDashboard() {
                 {[
                   { icon: '👤', ad: 'Profil', href: '/profil' },
                   { icon: '💳', ad: 'Abonelik', href: '/abonelik' },
+                  { icon: '🔖', ad: 'Kaydedilenler', href: '/kaydedilenler' },
                   { icon: '⚙️', ad: 'Ayarlar', href: '/ayarlar' },
                   { icon: '📊', ad: 'Aylık Rapor', href: '/aylik-rapor' },
                   { icon: '📱', ad: 'Sosyal Medya', href: '/ayarlar' },

@@ -45,6 +45,7 @@ const ozellikler = [
 ];
 
 export default function Dashboard() {
+  const { goster: turGoster, kapat: turKapat } = useOnboardingTour('isletme_onboarding');
   const [profil, setProfil] = useState<any>(null);
   const [haftalikModal, setHaftalikModal] = useState(false);
   const [istatistikModal, setIstatistikModal] = useState(false);
@@ -57,7 +58,6 @@ export default function Dashboard() {
   });
   const [haftalikSonuc, setHaftalikSonuc] = useState('');
   const [haftalikYukleniyor, setHaftalikYukleniyor] = useState(false);
-  const { goster: turGoster, kapat: turKapat } = useOnboardingTour('isletme_onboarding');
 
   useEffect(() => {
     async function profilGetir() {
@@ -104,7 +104,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-{turGoster && <OnboardingTour tip="isletme" onKapat={turKapat} />}
+      {turGoster && <OnboardingTour tip="isletme" onKapat={turKapat} />}
 
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur z-10">
@@ -132,6 +132,7 @@ export default function Dashboard() {
                 {[
                   { icon: '👤', ad: 'Profil', href: '/profil' },
                   { icon: '💳', ad: 'Abonelik', href: '/abonelik' },
+                  { icon: '🔖', ad: 'Kaydedilenler', href: '/kaydedilenler' },
                   { icon: '⚙️', ad: 'Ayarlar', href: '/ayarlar' },
                   { icon: '📊', ad: 'Aylık Rapor', href: '/aylik-rapor' },
                   { icon: '📱', ad: 'Sosyal Medya', href: '/ayarlar' },
@@ -173,7 +174,7 @@ export default function Dashboard() {
             <p className="text-base font-bold">{profil.hedef}</p>
           </div>
           <div
-          id="haftalik-plan"
+            id="haftalik-plan"
             onClick={() => setHaftalikModal(true)}
             className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 cursor-pointer hover:border-violet-500 transition group"
           >
@@ -182,7 +183,7 @@ export default function Dashboard() {
             <p className="text-green-400 text-xs mt-1 group-hover:text-violet-400 transition">↑ Planlandı — tıkla</p>
           </div>
           <div
-          id="haftalik-buyume" 
+            id="haftalik-buyume"
             onClick={() => setHaftalikBuyumeModal(true)}
             className="bg-violet-600 rounded-2xl p-5 cursor-pointer hover:bg-violet-700 transition"
           >
@@ -217,9 +218,10 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div 
-          id="icerik-uret"
-          className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col">
+          <div
+            id="icerik-uret"
+            className="bg-violet-600/10 border border-violet-500/30 rounded-2xl p-6 flex flex-col"
+          >
             <h2 className="text-sm font-semibold mb-2">✨ İçerik üret</h2>
             <p className="text-zinc-400 text-xs mb-4 flex-1">AI ile sohbet et, sektörüne özel viral içerik fikirleri al.</p>
             <div className="space-y-2">
@@ -312,10 +314,7 @@ export default function Dashboard() {
         </div>
 
         {/* TÜM ARAÇLAR */}
-        <div 
-        id="tum-araclar"
-        className="mb-2"
-        >
+        <div id="tum-araclar" className="mb-2">
           <h2 className="text-sm font-semibold text-zinc-400 mb-4">🛠️ Tüm araçlar</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {ozellikler.map((o, i) => (
@@ -331,7 +330,6 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-
       </div>
 
       {/* HAFTALIK PLAN MODAL */}
@@ -395,7 +393,6 @@ export default function Dashboard() {
               <button onClick={() => { setHaftalikBuyumeModal(false); setHaftalikSonuc(''); }}
                 className="text-zinc-500 hover:text-white text-xl transition">×</button>
             </div>
-
             {!haftalikSonuc ? (
               <div className="p-5 space-y-5">
                 {profil?.instagram_kullanici && (
@@ -413,9 +410,7 @@ export default function Dashboard() {
                       ].map(({ key, label, placeholder }) => (
                         <div key={key}>
                           <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
-                          <input
-                            type="number"
-                            placeholder={placeholder}
+                          <input type="number" placeholder={placeholder}
                             value={(haftalikForm as any)[key]}
                             onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
                             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-pink-500 transition"
@@ -425,7 +420,6 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
-
                 {profil?.tiktok_kullanici && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
@@ -441,9 +435,7 @@ export default function Dashboard() {
                       ].map(({ key, label, placeholder }) => (
                         <div key={key}>
                           <label className="text-xs text-zinc-500 mb-1 block">{label}</label>
-                          <input
-                            type="number"
-                            placeholder={placeholder}
+                          <input type="number" placeholder={placeholder}
                             value={(haftalikForm as any)[key]}
                             onChange={e => setHaftalikForm(prev => ({ ...prev, [key]: e.target.value }))}
                             className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition"
@@ -453,19 +445,15 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
-
                 {!profil?.instagram_kullanici && !profil?.tiktok_kullanici && (
                   <div className="text-center py-6">
                     <p className="text-zinc-400 text-sm mb-3">Henüz sosyal medya hesabı eklenmemiş.</p>
                     <a href="/ayarlar" className="text-violet-400 text-sm hover:text-violet-300">Hesap ekle →</a>
                   </div>
                 )}
-
-                <button
-                  onClick={haftalikAnalizOlustur}
+                <button onClick={haftalikAnalizOlustur}
                   disabled={haftalikYukleniyor || (!profil?.instagram_kullanici && !profil?.tiktok_kullanici)}
-                  className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 py-3 rounded-xl text-sm font-semibold transition"
-                >
+                  className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 py-3 rounded-xl text-sm font-semibold transition">
                   {haftalikYukleniyor ? 'Analiz ediliyor...' : '📊 Haftalık Analizi Oluştur'}
                 </button>
               </div>
@@ -561,17 +549,6 @@ export default function Dashboard() {
                   ))}
                 </div>
               </div>
-              <div className="bg-zinc-800 rounded-xl p-4">
-                <p className="text-sm font-semibold mb-3">🕐 En İyi Paylaşım Saatleri</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {['18:00', '20:00', '12:00'].map((saat, i) => (
-                    <div key={i} className="text-center bg-zinc-700 rounded-lg p-2">
-                      <p className="text-sm font-bold">{saat}</p>
-                      <p className="text-xs text-zinc-500">{i === 0 ? 'En iyi' : i === 1 ? '2. en iyi' : '3. en iyi'}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
               <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
                 <p className="text-sm font-semibold text-green-400 mb-2">✅ AI Tavsiyesi</p>
                 <p className="text-xs text-zinc-300 leading-relaxed">
@@ -583,7 +560,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
     </main>
   );
 }

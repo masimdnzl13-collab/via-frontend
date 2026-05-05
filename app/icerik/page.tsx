@@ -6,9 +6,9 @@ interface Mesaj {
   rol: 'kullanici' | 'ai';
   icerik: string;
 }
+
 function MesajKarti({ icerik }: { icerik: string }) {
   const satirlar = icerik.split('\n').filter(s => s.trim());
-  
   return (
     <div className="space-y-2">
       {satirlar.map((satir, i) => {
@@ -68,17 +68,21 @@ function MesajKarti({ icerik }: { icerik: string }) {
             </div>
           );
         }
-        // Tag olmayan satırları gizle — # işaretleri vs görünmesin
         return null;
       })}
     </div>
   );
 }
+
 export default function IcerikUret() {
   const [mesajlar, setMesajlar] = useState<Mesaj[]>([]);
   const [input, setInput] = useState('');
   const [yukleniyor, setYukleniyor] = useState(false);
   const [profil, setProfil] = useState<any>(null);
+  const [kaydetModalAcik, setKaydetModalAcik] = useState(false);
+  const [kayitBasligi, setKayitBasligi] = useState('');
+  const [kaydediliyor, setKaydediliyor] = useState(false);
+  const [kaydedildi, setKaydedildi] = useState(false);
   const altRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -103,12 +107,10 @@ export default function IcerikUret() {
 
   async function mesajGonder() {
     if (!input.trim() || yukleniyor) return;
-
     const kullaniciMesaj = input.trim();
     setInput('');
     setMesajlar(prev => [...prev, { rol: 'kullanici', icerik: kullaniciMesaj }]);
     setYukleniyor(true);
-
     try {
       const res = await fetch('/api/sohbet', {
         method: 'POST',
@@ -127,10 +129,30 @@ export default function IcerikUret() {
     setYukleniyor(false);
   }
 
+  async function sohbetiKaydet() {
+    if (!kayitBasligi.trim()) return;
+    setKaydediliyor(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('kaydedilenler').insert({
+        user_id: user?.id,
+        baslik: kayitBasligi.trim(),
+        mesajlar: mesajlar,
+      });
+      setKaydedildi(true);
+      setKaydetModalAcik(false);
+      setKayitBasligi('');
+      setTimeout(() => setKaydedildi(false), 3000);
+    } catch {
+      alert('Kaydetme hatası.');
+    }
+    setKaydediliyor(false);
+  }
+
   function enterBasildi(e: React.KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      mesajGonder();
+      void mesajGonder();
     }
   }
 
@@ -150,11 +172,24 @@ export default function IcerikUret() {
           <a href="/dashboard" className="text-zinc-500 hover:text-white transition text-sm">← Dashboard</a>
           <div className="text-lg font-bold">via<span className="text-violet-500">.ai</span></div>
         </div>
-        {profil && (
-          <div className="text-xs text-zinc-500">
-            {profil.isletme_adi} · {profil.sektor} · {profil.sehir}
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {profil && (
+            <div className="text-xs text-zinc-500 hidden md:block">
+              {profil.isletme_adi} · {profil.sektor} · {profil.sehir}
+            </div>
+          )}
+          {kaydedildi && (
+            <span className="text-xs text-green-400">✓ Kaydedildi</span>
+          )}
+          {mesajlar.length > 1 && (
+            <button
+              onClick={() => setKaydetModalAcik(true)}
+              className="flex items-center gap-1.5 text-xs bg-violet-600 hover:bg-violet-700 px-3 py-1.5 rounded-lg transition"
+            >
+              🔖 Kaydet
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* Mesaj alanı */}
@@ -167,12 +202,12 @@ export default function IcerikUret() {
               </div>
             )}
             <div className={`max-w-xl rounded-2xl text-sm leading-relaxed ${
-  m.rol === 'kullanici'
-    ? 'bg-violet-600 text-white rounded-br-sm px-4 py-3'
-    : 'rounded-bl-sm'
-}`}>
-  {m.rol === 'kullanici' ? m.icerik : <MesajKarti icerik={m.icerik} />}
-</div>
+              m.rol === 'kullanici'
+                ? 'bg-violet-600 text-white rounded-br-sm px-4 py-3'
+                : 'rounded-bl-sm'
+            }`}>
+              {m.rol === 'kullanici' ? m.icerik : <MesajKarti icerik={m.icerik} />}
+            </div>
             {m.rol === 'kullanici' && (
               <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center text-xs font-bold ml-3 flex-shrink-0 mt-1">
                 {profil?.isletme_adi?.[0] || 'S'}
@@ -188,9 +223,9 @@ export default function IcerikUret() {
             </div>
             <div className="bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-2xl rounded-bl-sm">
               <div className="flex gap-1 items-center h-5">
-                <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}/>
-                <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{animationDelay: '150ms'}}/>
-                <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{animationDelay: '300ms'}}/>
+                <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </div>
@@ -205,12 +240,46 @@ export default function IcerikUret() {
             {hizliSorular.map((s, i) => (
               <button
                 key={i}
-                onClick={() => { setInput(s); }}
+                onClick={() => setInput(s)}
                 className="text-left text-sm bg-zinc-900 border border-zinc-800 hover:border-violet-500 px-4 py-3 rounded-xl transition text-zinc-400 hover:text-white"
               >
                 {s}
               </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Kaydet Modal */}
+      {kaydetModalAcik && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setKaydetModalAcik(false)}>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-full max-w-sm"
+            onClick={e => e.stopPropagation()}>
+            <h2 className="text-base font-bold mb-1">🔖 Sohbeti Kaydet</h2>
+            <p className="text-zinc-500 text-xs mb-4">Kaydedilenler listesinde nasıl görünsün?</p>
+            <input
+              type="text"
+              placeholder="Örn: Yuva Metbahçe Rakip Analizi"
+              value={kayitBasligi}
+              onChange={e => setKayitBasligi(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { void sohbetiKaydet(); } }}
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition mb-4"
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setKaydetModalAcik(false)}
+                className="flex-1 py-2.5 text-sm border border-zinc-700 rounded-xl text-zinc-400 hover:text-white transition">
+                İptal
+              </button>
+              <button
+                onClick={() => { void sohbetiKaydet(); }}
+                disabled={kaydediliyor || !kayitBasligi.trim()}
+                className="flex-1 py-2.5 text-sm bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 rounded-xl font-semibold transition">
+                {kaydediliyor ? 'Kaydediliyor...' : 'Kaydet'}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -225,10 +294,10 @@ export default function IcerikUret() {
             placeholder="Ne yapmamı istersin? (Enter ile gönder)"
             rows={1}
             className="flex-1 bg-transparent text-sm text-white placeholder-zinc-500 resize-none focus:outline-none leading-relaxed"
-            style={{minHeight: '24px', maxHeight: '120px'}}
+            style={{ minHeight: '24px', maxHeight: '120px' }}
           />
           <button
-            onClick={mesajGonder}
+            onClick={() => { void mesajGonder(); }}
             disabled={yukleniyor || !input.trim()}
             className="bg-violet-600 hover:bg-violet-700 disabled:bg-zinc-700 disabled:text-zinc-500 w-10 h-10 rounded-xl flex items-center justify-center transition flex-shrink-0"
           >
@@ -237,7 +306,6 @@ export default function IcerikUret() {
         </div>
         <p className="text-xs text-zinc-600 text-center mt-2">via.ai · {profil?.sektor} uzmanı</p>
       </div>
-
     </main>
   );
 }

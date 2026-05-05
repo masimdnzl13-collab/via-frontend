@@ -26,6 +26,7 @@ const KORUNALI_ROTALAR = [
   '/isbirligi-teklif',
   '/gelir-hesaplayici',
   '/viral-kanca',
+  '/kaydedilenler',  
 ];
 
 export async function middleware(req: NextRequest) {
